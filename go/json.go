@@ -9,13 +9,13 @@ import (
 // 成员变量必须大写
 type person struct {
     Name string `json:"name"`
-    Age int `json:"age"`
+    Age int `json:"age,omitempty"`
 }
 
 func main() {
-    p := person{"majun", 32}
+    p := person{Name: "majun"}
     b, _ := json.Marshal(p)
-    fmt.Println(j)
+    fmt.Println(b)
     fmt.Printf("%T\n", b) // []uint8
     os.Stdout.Write(b)
 }
