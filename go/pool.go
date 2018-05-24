@@ -10,13 +10,11 @@ import(
 func main() {
     p := &sync.Pool{
         New: func() interface{} {
-            return "MAJUN"
+            return "Hello, Beijing"
         },
     }
 
-    a := p.Get().(string)
-    b := p.Get().(string)
-    p.Put("1")
-    c := p.Get().(string)
-    fmt.Println(a, b, c)
+    p.Put("Hello, World")
+    fmt.Println(p.Get().(string))
+    fmt.Println(p.Get().(string))
 }
