@@ -1,0 +1,11 @@
+1. 发现慢查询
+slowlog <subcommand> [n]
+
+2. 发现大对象
+redis-cli -h {ip} -p {port} --bigkeys
+
+3. 发现CPU饱和
+top
+
+4. 统计命令
+redis-cli -h {ip} -p {port} --stat

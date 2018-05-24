@@ -1,0 +1,37 @@
+mysql> create database if not exists launcher DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+
+mysql> CREATE TABLE mapping
+    -> (
+    -> id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -> sex_id INT NOT NULL,
+    -> person_id INT NOT NULL,
+    -> INDEX sex (sex_id),
+    -> CONSTRAINT sex_blabla FOREIGN KEY (sex_id) REFERENCES sex(id),
+    -> INDEX person (person_id),
+    -> CONSTRAINT person_blabla FOREIGN KEY (person_id) REFERENCES person(id)
+    -> )Engine=InnoDB DEFAULT CHARSET=utf8;
+
+mysql> SHOW CREATE TABLE mapping;
+
+mysql> SHOW INDEX FROM mapping;
+
+mysql> SHOW KEYS FROM mapping;
+
+mysql> INSERT INTO mapping
+    -> (sex_id, person_id)
+    -> VALUES
+    -> (1, 1);
+
+mysql> SELECT COUNT(0) FROM mapping;
+
+mysql> SELECT p.name, s.xingbie FROM sex as s JOIN mapping as m on s.id = m.sex_id JOIN person as p on m.person_id = p.id;
+
+mysql> ALTER TABLE mapping ADD age INT NOT NULL;
+
+mysql> CREATE INDEX age_idx ON mapping(age);
+
+mysql> DROP INDEX age_idx ON mapping;
+
+mysql> ALTER TABLE mapping DROP age;
+
+mysql> SELECT m.person_id, s.xingbie FROM mapping as m RIGHT JOIN sex as s on m.sex_id = s.id;

@@ -1,0 +1,67 @@
+1. git help <>
+2. git stash -u[--include-untracked]
+   git stash list
+   git stash pop --index
+3. git status -s
+4. git log --graph --pretty=oneline --abbrev-commit
+5. git checkout -b <>
+6. git push -u origin master(used in the first time)
+   git push origin master
+7. git merge <>
+   git merge --no-ff -m ".." <>
+8. git checkout -- <>
+   git checkout -b <>
+   git checkout <>
+9. git branch
+   git branch -a
+   git branch -d
+   git branch -D
+10.git reset HEAD -- <>
+   git reset [--mixed] <>
+   git reset --hard <>
+   git reset --soft <>
+11.git reflog
+12.git remote
+   git remote -v
+   git remote add <> <>
+13.git tag
+   git tag v1.0
+   git tag v2.0 <>
+   git tag -a v3.0 -m ".."
+   git show v1.0
+
+   git push origin <>
+   git push origin --tags
+   git tag -d <>
+   git push origin :refs/tags/<> 
+14.git config --global user.name ".."
+   git config --global user.email ".."
+   git config --global color.ui true
+
+   git config --global alias.st status
+   git config --global alias.co checkout
+   git config --global alias.ci commit
+   git config --global alias.br branch
+   git config --global alias.unstage 'reset HEAD'
+   git config --global alias.last 'log -1'
+   git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+   git config --global alias.slg "log --graph --pretty=oneline --abbrev-commit"
+   git config --global core.editor "vim"
+
+15..gitignore file
+   https://github.com/github/gitignore
+   git add -f <>(force to add files)
+
+   git check-ignore -v <>
+16.install one git server
+   </home/git/.ssh/authorized_keys>
+   sudo apt-get install git
+   sudo adduser git
+   sudo git init --bare sample.git
+   sudo chown -R git:git sample.git
+   /etc/passwd: git:x:1001:1001:,,,:/home/git:/usr/bin/git-shell
+   git clone git@server:/srv/sample.git
+17.git revert HEAD
+   git revert HEAD^
+18.git blame <>
+   git show <commit-id>

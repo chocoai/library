@@ -1,0 +1,11 @@
+1. pip freeze > requirements
+
+2. 在线安装 
+
+mkdir pipdownload
+
+pip install --download pipdownload -r requirements
+
+3. 离线安装
+
+pip install --no-index --find-links pipdownload -r requirements

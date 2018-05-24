@@ -1,0 +1,12 @@
+在/usr/local/share/kafka10/bin目录下执行如下命令：
+
+./kafka-console-producer.sh --broker-list 10.18.208.121:9092 --topic Topic-ChnInfo-From-LBSyncTask
+
+./kafka-console-consumer.sh --zookeeper 10.18.208.121:9092 --topic Topic-ChnInfo-From-LBSyncTask --from-beginning
+
+
+查看出topic 生产和消费的的偏移量。
+
+./kafka-consumer-offset-checker.sh --group vod_group --zookeeper 10.18.208.121:9092 --topic Topic-ChnInfo-From-LBSyncTask
+
+/usr/local/fountain/bin/syncpipe_III/syncpipe -c syncpipeconf/replication.config_246 -d

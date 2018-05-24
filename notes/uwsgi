@@ -1,0 +1,17 @@
+1. net.core.somaxconn
+
+vim /etc/sysctl.conf 在文件最后添加一行记录net.core.somaxconn = 1024 执行sysctl -p重新load参数设置，这样会立即生效，并且以后重新启动机器也会生效。
+
+2. added /home/niubaoke/new_vod/huasu_vod/new_media_base/kernel/ to pythonpath. *** uWSGI is running in multiple interpreter mode *** spawned uWSGI master process (pid: 55316) spawned uWSGI worker 1 (pid: 55317, cores: 800) WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x117c540 pid: 55317 (default app) *** running gevent loop engine [addr:0x490580] *** {'pattern': None, 'type': 'subscribe', 'channel': 'basicmedia:config', 'data': 1L} uwsgi_response_write_body_do(): Broken pipe [core/writer.c line 296] IOError: write error [pid: 55317|app: 0|req: 1/1] 10.18.100.88 () {44 vars in 867 bytes} [Thu Jul 27 05:47:48 2017] POST /admin_sync/api/basic_tag?id=13021,13022 => generated 0 bytes in 120171 msecs (HTTP/1.1 200) 2 headers in 72 bytes (2 switches o n core 799) "/var/log/janiu_media.log" 122L, 9774C
+
+
+
+This can happen when NGINX started a request to uWSGI but uWSGI took too long to respond, then NGINX closes the connection to uWSGI. When uWSGI finally finishes, it tries to give it's response back to NGINX, but NGINX closed the connection earlier, so then uWSGI throws an I/O error.
+
+
+
+uwsgi_read_timeout 600; 
+
+uwsgi_send_timeout 600; 
+
+uwsgi_connect_timeout 60;
