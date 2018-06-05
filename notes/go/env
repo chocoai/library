@@ -1,0 +1,3 @@
+export GOPATH=/home/majun/bin/path/go
+export GOBIN=/home/majun/bin/path/go/bin
+export PATH=$PATH:${GOPATH//://bin:}/bin

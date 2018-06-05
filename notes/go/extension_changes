@@ -1,0 +1,5 @@
+1. $GOPATH/src/github.com/pborman/uuid/version4.go
+20行修改为: uuid := make([]byte, 128)
+
+2. $GOPATH/src/github.com/RangelReale/osin/storage.go
+30行增加一个接口函数: SetClient(id string, client Client) error
