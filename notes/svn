@@ -1,0 +1,6 @@
+1. PySvn
+sudo apt-get install python-svn
+sudo apt-get install svn-workbench
+
+2. login
+{"name" => "majun", "password" => "DAG66FWSNafS57U", "project" => ["exchange"]
