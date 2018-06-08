@@ -1,0 +1,81 @@
+1. 安装方法
+(1) 源码安装
+./configure
+make
+make install
+ruby -v
+
+(2) 自动安装
+sudo apt-get install ruby-full
+
+(3) 使用rvm安装
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+curl -sSL https://get.rvm.io | bash -s stable
+
+附录
+a. 列出已知的ruby版本
+rvm list known
+
+b. 安装指定版本的ruby
+rvm install 2.2.1
+
+c. 查询已经安装的ruby
+rvm list
+
+d. 设置ruby版本
+rvm 2.2.1 --default
+ruby -v
+gem -v
+
+(4) 使用rbenv安装
+sudo apt-get install git-core curl zlib1g-dev build-essential \
+                     libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 \
+                     libxml2-dev libxslt1-dev libcurl4-openssl-dev \
+                     python-software-properties libffi-dev
+
+cd
+git clone git://github.com/sstephenson/rbenv.git .rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+exec $SHELL
+
+git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
+exec $SHELL
+
+rbenv install 2.2.1
+rbenv global 2.2.1
+
+echo "gem: --no-ri --no-rdoc" > ~/.gemrc
+gem install bundler
+rbenv rehash
+
+2. 起始部分
+#!/usr/bin/env ruby
+# -*- coding:utf-8 -*-
+
+3. 行尾
+分号和换行符
+
+4. 字符串
+(1) 单引号和双引号
+(2) 多行字符串
+%/string/
+%Q/string/
+%q/string/
+注意两点:
+a. "/"是分隔符，可以是其他字符
+b. 前两种效果是一样的
+(3) Here Document
+<<EOF
+EOF
+
+<<"EOF"
+EOF
+
+<<'EOF'
+EOF
+
+<<"majun", <<"songchi"
+majun
+songchi
