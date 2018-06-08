@@ -1,0 +1,10 @@
+1. 注释掉/root/.rbenv/versions/2.2.1/lib/ruby/gems/2.2.0/gems/acts_as_readable-2.1.1/lib/acts_as_readable/acts_as_readable.rb第9行
+
+2. clean method
+1) 删除 .rbenv/versions/2.2.1/lib/ruby/gems/2.2.0/cache/
+2) 删除peatio根目录的gemfile.lock
+3) bundle install
+
+3. mariadb
+
+4. 注释掉db/seed.rb中关于admin_two_factor的
