@@ -1,0 +1,19 @@
+1. break
+
+2. next
+
+3. redo
+
+4. retry
+(1) retry 出现在 begin 表达式的 rescue 子句，则从 begin 主体的开头重新开始
+begin
+    do sth.
+rescue
+    retry
+end
+
+(2) etry 出现在迭代内、块内或者 for 表达式的主体内，则重新开始迭代调用。迭代的参数会重新评估
+for i in 1..5
+   retry if  i > 2
+   puts "局部变量的值为 #{i}"
+end
