@@ -59,6 +59,10 @@ rbenv rehash
 
 4. 字符串
 (1) 单引号和双引号
+单引号只允许使用\\和\'两个反斜线符号
+puts 'escape using "\\"'
+puts 'That\'s right'
+
 (2) 多行字符串
 %/string/
 %Q/string/
@@ -66,6 +70,7 @@ rbenv rehash
 注意两点:
 a. "/"是分隔符，可以是其他字符
 b. 前两种效果是一样的
+
 (3) Here Document
 <<EOF
 EOF
