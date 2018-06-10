@@ -1,0 +1,16 @@
+https://railstutorial-china.org/rails4/
+1. first_app
+2. demo_app
+3. sample_app（学习重点）
+4. 静态页面和动态内容
+5. ruby & rails
+6. advanced features
+网站布局、用户数据模型、完善的注册和验证流程、
+微博和社交功能
+
+目标:
+1. ruby和rails的关系
+2. 使用脚手架创建rails工程
+3. RSpec测试框架
+4. HTML, CSS, JavaScript、SQL
+5. 使用rails开发大型网站，如何设计业务流程
