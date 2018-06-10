@@ -1,0 +1,22 @@
+1. rails generate controller home index welcome about contact
+
+2. config/routes.rb
+get 'home/index'
+get 'home/welcome'
+get 'home/about'
+get 'home/contact'
+
+3. '/'
+get '/', to: 'home#index'
+OR
+root 'home#index'
+
+4. get '/something/:controller/:name/:action'
+/something/home/aaa/index
+---解释---
+something 是个前缀
+访问的 controller 是 home
+name 参数是 aaa
+方法是 index
+
+5. match ':controller/:action/:id', via: [:get, :post]
