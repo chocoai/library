@@ -1,0 +1,369 @@
+0. 架构
+(1) 在监听的端口接收数据，默认监听在 8080 端口。
+
+(2) 用户请求到达 8080 端口之后进入 beego 的处理逻辑
+
+(3) 初始化 Context 对象，根据请求判断是否为 WebSocket 请求，如果是的话设置 Input，同时判断请求的方法是否在标准请求方法中
+   （GET、POST、PUT、DELETE、PATCH、OPTIONS、HEAD）， 防止用户的恶意伪造请求攻击造成不必要的影响。
+
+(4) 执行 BeforeRouter 过滤器，当然在 beego 里面有开关设置。如果用户设置了过滤器，那么该开关打开，这样可以提高在没有开启过滤器的情况下提高执行效率。
+    如果在执行过滤器过程中，responseWriter 已经有数据输出了，那么就提前结束该请求，直接跳转到监控判断。
+
+(5) 开始执行静态文件的处理，查看用户的请求 URL 是否和注册在静态文件处理 StaticDir 中的 prefix 是否匹配。如果匹配的话，采用 http 包中默认的 ServeFile 来处理静态文件。
+
+(6) 如果不是静态文件开始初始化 session 模块(如果开启 session 的话)，这个里面大家需要注意，如果你的 BeforeRouter 过滤器用到了 session 就会报错，你应该把它加入到 AfterStatic 过滤器中。
+
+(7) 开始执行 AfterStatic 过滤器，如果在执行过滤器过程中，responseWriter 已经有数据输出了，那么就提前结束该请求，直接跳转到监控判断。
+
+(8) 执行过过滤器之后，开始从固定的路由规则中查找和请求 URL 相匹配的对象。这个匹配是全匹配规则，即如果用户请求的 URL 是 /hello/world，
+    那么固定规则中 /hello 是不会匹配的，只有完全匹配才算匹配。如果匹配的话就进入逻辑执行，如果不匹配进入下一环节的正则匹配。
+
+(9) 正则匹配是进行正则的全匹配，这个正则是按照用户添加 beego 路由顺序来进行匹配的，也就是说，如果你在添加路由的时候你的顺序影响你的匹配。
+    和固定匹配一样，如果匹配的话就进行逻辑执行，如果不匹配进入 Auto 匹配。
+
+(10) 如果用户注册了 AutoRouter，那么会通过 controller/method 这样的方式去查找对应的 Controller 和他内置的方法，如果找到就开始执行逻辑，如果找不到就跳转到监控判断。
+
+(11) 如果找到 Controller 的话，那么就开始执行逻辑，首先执行 BeforeExec 过滤器，如果在执行过滤器过程中，responseWriter 已经有数据输出了，那么就提前结束该请求，直接跳转到监控判断。
+
+(12) Controller 开始执行 Init 函数，初始化基本的一些信息，这个函数一般都是 beego.Controller 的初始化，不建议用户继承的时候修改该函数。
+
+(13) 是否开启了 XSRF，开启的话就调用 Controller 的 XsrfToken，然后如果是 POST 请求就调用 CheckXsrfCookie 方法。
+
+(14) 继续执行 Controller 的 Prepare 函数，这个函数一般是预留给用户的，用来做 Controller 里面的一些参数初始化之类的工作。如果在初始化中 responseWriter 有输出，那么就直接进入 Finish 函数逻辑。
+
+(15) 如果没有输出的话，那么根据用户注册的方法执行相应的逻辑，如果用户没有注册，那么就调用 http.Method 对应的方法（Get/Post 等）。
+     执行相应的逻辑，例如数据读取，数据赋值，模板显示之类的，或者直接输出 JSON 或者 XML。
+
+(16) 如果 responseWriter 没有输出，那么就调用 Render 函数进行模板输出。
+
+(17) 执行 Controller 的 Finish 函数，这个函数是预留给用户用来重写的，用于释放一些资源。释放在 Init 中初始化的信息数据。
+
+(18）执行 AfterExec 过滤器，如果有输出的话就跳转到监控判断逻辑。
+
+(19) 执行 Controller 的 Destructor，用于释放 Init 中初始化的一些数据。
+
+(20) 如果这一路执行下来都没有找到路由，那么会调用 404 显示找不到该页面。
+
+(21) 最后所有的逻辑都汇聚到了监控判断，如果用户开启了监控模块（默认是开启一个 8088 端口用于进程内监控），
+     这样就会把访问的请求链接扔给监控程序去记录当前访问的 QPS，对应的链接访问的执行时间，请求链接等。
+
+1. 路由设置
+(1) 基础路由
+a. 基本GET路由
+beego.Get("/",func(ctx *context.Context){
+     ctx.Output.Body([]byte("hello world"))
+})
+
+b. 基本POST路由
+beego.Post("/alice",func(ctx *context.Context){
+     ctx.Output.Body([]byte("bob"))
+})
+
+c. 如何HTTP路由
+beego.Any("/foo",func(ctx *context.Context){
+     ctx.Output.Body([]byte("bar"))
+})
+
+beego.Get(router, beego.FilterFunc)
+beego.Post(router, beego.FilterFunc)
+beego.Put(router, beego.FilterFunc)
+beego.Patch(router, beego.FilterFunc)
+beego.Head(router, beego.FilterFunc)
+beego.Options(router, beego.FilterFunc)
+beego.Delete(router, beego.FilterFunc)
+beego.Any(router, beego.FilterFunc)
+
+(2) 固定路由
+beego.Router("/", &controllers.MainController{})
+beego.Router("/admin", &admin.UserController{})
+beego.Router("/admin/index", &admin.ArticleController{})
+beego.Router("/admin/addpkg", &admin.AddController{})
+
+type ControllerInterface interface {
+	Init(ct *context.Context, controllerName, actionName string, app interface{})
+	Prepare()
+	Get()
+	Post()
+	Delete()
+	Put()
+	Head()
+	Patch()
+	Options()
+	Finish()
+	Render() error
+	XSRFToken() string
+	CheckXSRFCookie() bool
+	HandlerFunc(fn string) bool
+	URLMapping()
+}
+
+(3) 正则路由
+this.Ctx.Input.Param(":id")
+this.Ctx.Input.Param(":username")
+this.Ctx.Input.Param(":splat")
+this.Ctx.Input.Param(":path")
+this.Ctx.Input.Param(":ext")
+
+(4) 自定义方法及 RESTful 规则
+beego.Router("/api/list",&RestController{},"*:ListFood")
+beego.Router("/api/create",&RestController{},"post:CreateFood")
+beego.Router("/api/update",&RestController{},"put:UpdateFood")
+beego.Router("/api/delete",&RestController{},"delete:DeleteFood")
+beego.Router("/api",&RestController{},"get,post:ApiFunc")
+beego.Router("/simple",&SimpleController{},"get:GetFunc;post:PostFunc")
+
+a. *表示任意的 method 都执行该函数
+b. 使用 httpmethod:funcname 格式来展示
+c. 多个不同的格式使用 ; 分割
+d. 多个 method 对应同一个 funcname，method 之间通过 , 来分割
+
+(5) 自动匹配
+beego.AutoRouter(&controllers.ObjectController{})
+
+/object/login   调用 ObjectController 中的 Login 方法
+/object/logout  调用 ObjectController 中的 Logout 方法
+
+/:controller/:method
+参数保存在 this.Ctx.Input.Params 当中
+/object/blog/2013/09/12  调用 ObjectController 中的 Blog 方法，参数如下：map[0:2013 1:09 2:12]
+
+现在已经可以通过自动识别出来下面类似的所有 url，都会把请求分发到 controller 的 simple 方法：
+/controller/simple
+/controller/simple.html
+/controller/simple.json
+/controller/simple.xml
+可以通过 this.Ctx.Input.Param(":ext") 获取后缀名。
+
+(6) 注解路由 - Include
+
+(7) namespace
+ns :=
+beego.NewNamespace("/v1",
+    beego.NSCond(func(ctx *context.Context) bool {
+        if ctx.Input.Domain() == "api.beego.me" {
+            return true
+        }
+        return false
+    }),
+    beego.NSBefore(auth),
+    beego.NSGet("/notallowed", func(ctx *context.Context) {
+        ctx.Output.Body([]byte("notAllowed"))
+    }),
+    beego.NSRouter("/version", &AdminController{}, "get:ShowAPIVersion"),
+    beego.NSRouter("/changepassword", &UserController{}),
+    beego.NSNamespace("/shop",
+        beego.NSBefore(sentry),
+        beego.NSGet("/:id", func(ctx *context.Context) {
+            ctx.Output.Body([]byte("notAllowed"))
+        }),
+    ),
+    beego.NSNamespace("/cms",
+        beego.NSInclude(
+            &controllers.MainController{},
+            &controllers.CMSController{},
+            &controllers.BlockController{},
+        ),
+    ),
+)
+//注册 namespace
+beego.AddNamespace(ns)
+
+2. beego.Run()
+(1) 解析配置文件
+beego 会自动解析在 conf 目录下面的配置文件 app.conf，通过修改配置文件相关的属性，我们可以定义：开启的端口，是否开启 session，应用名称等信息
+
+(2) 执行用户的 hookfunc
+beego 会执行用户注册的 hookfunc，默认的已经存在了注册 mime，用户可以通过函数 AddAPPStartHook 注册自己的启动函
+
+(3) 是否开启 session
+
+(4) 是否编译模板
+在启动的时候根据配置把 views 目录下的所有模板进行预编译，然后存在 map 里面，这样可以有效的提高模板运行的效率，无需进行多次编译
+
+(5) 是否开启文档功能
+
+(6) 是否启动管理模块 - 8088
+通过8088这个端口查询到 QPS、CPU、内存、GC、goroutine、thread 等统计信息
+
+(7) 监听服务端口 - 8080
+内部其实调用了ListenAndServe
+
+3. controller
+(1) beego.Controller
+Init、Prepare、Post、Get、Delete、Head等方法
+(2) examples
+func (this *MainController) Get() {
+        this.Data["Website"] = "beego.me"
+        this.Data["Email"] = "astaxie@gmail.com"
+        this.TplName = "index.tpl"
+}
+
+func (this *MainController) Get() {
+        this.Ctx.WriteString("hello")
+}
+
+4. model
+如果controller的逻辑里面存在着可以复用的东西，那么就抽取出来变成一个模块；
+因此，Model 就是逐步抽象的过程，一般我们会在 Model 里面处理一些数据读取
+
+5. view
+默认支持tpl和html后缀名的模板文件，如果想设置其他后缀你可以调用 beego.AddTemplateExt 接口设置
+
+6. 静态文件处理
+beego 默认注册了 static 目录为静态处理的目录，注册样式：URL 前缀和映射的目录
+StaticDir["/static"] = "static"
+
+beego.SetStaticPath("/down1", "download1")
+beego.SetStaticPath("/down2", "download2")
+http://localhost:8080/down1/123.txt 则会请求 download1 目录下的 123.txt 文件
+
+7. 过滤器
+beego.InsertFilter(pattern string, position int, filter FilterFunc, params ...bool)
+
+BeforeStatic 静态地址之前
+BeforeRouter 寻找路由之前
+BeforeExec 找到路由之后，开始执行相应的 Controller 之前
+AfterExec 执行完 Controller 逻辑之后执行的过滤器
+FinishRouter 执行完逻辑之后执行的过滤器
+
+8. 参数配置
+(0) 加载配置文件
+beego.LoadAppConfig("ini", "conf/app.conf")
+也可以加载多个文件，只要你调用多次就可以了，如果后面的文件和前面的 key 冲突，那么以最新加载的为最新值
+
+(1) // Config is the main struct for BConfig
+type Config struct {
+	AppName             string //Application name
+	RunMode             string //Running Mode: dev | prod
+	RouterCaseSensitive bool
+	ServerName          string
+	RecoverPanic        bool
+	RecoverFunc         func(*context.Context)
+	CopyRequestBody     bool
+	EnableGzip          bool
+	MaxMemory           int64
+	EnableErrorsShow    bool
+	EnableErrorsRender  bool
+	Listen              Listen
+	WebConfig           WebConfig
+	Log                 LogConfig
+}
+
+代码设置 - beego.BConfig.AppName
+代码读取 - beego.AppConfig.String("AppName")
+
+(2) section
+可以有不同的 Runmode 的配置，默认优先读取 runmode 下的配置信息
+[dev]
+httpport = 8080
+[prod]
+httpport = 8088
+[test]
+httpport = 8888
+
+beego.AppConfig.String("dev::mysqluser")
+
+(3) 多个配置文件
+在app.conf里面使用include关键字
+
+(4) 通过环境变量配置
+runmode = "${ProRunMode||dev}"
+httpport = "${ProPort||9090}"
+
+9. 控制器函数 - fashion style
+(1) fashion style
+type NestPreparer interface {
+        NestPrepare()
+}
+
+// baseRouter implemented global settings for all other routers.
+type baseRouter struct {
+        beego.Controller
+        i18n.Locale
+        user    models.User
+        isLogin bool
+}
+// Prepare implemented Prepare method for baseRouter.
+func (this *baseRouter) Prepare() {
+
+        // page start time
+        this.Data["PageStartTime"] = time.Now()
+
+        // Setting properties.
+        this.Data["AppDescription"] = utils.AppDescription
+        this.Data["AppKeywords"] = utils.AppKeywords
+        this.Data["AppName"] = utils.AppName
+        this.Data["AppVer"] = utils.AppVer
+        this.Data["AppUrl"] = utils.AppUrl
+        this.Data["AppLogo"] = utils.AppLogo
+        this.Data["AvatarURL"] = utils.AvatarURL
+        this.Data["IsProMode"] = utils.IsProMode
+
+        if app, ok := this.AppController.(NestPreparer); ok {
+                app.NestPrepare()
+        }
+}
+
+type BaseAdminRouter struct {
+    baseRouter
+}
+
+func (this *BaseAdminRouter) NestPrepare() {
+    if this.CheckActiveRedirect() {
+            return
+    }
+
+    // if user isn't admin, then logout user
+    if !this.user.IsAdmin {
+            models.LogoutUser(&this.Controller)
+
+            // write flash message
+            this.FlashWrite("NotPermit", "true")
+
+            this.Redirect("/login", 302)
+            return
+    }
+
+    // current in admin page
+    this.Data["IsAdmin"] = true
+
+    if app, ok := this.AppController.(ModelPreparer); ok {
+            app.ModelPrepare()
+            return
+    }
+}
+
+func (this *BaseAdminRouter) Get(){
+    this.TplName = "Get.tpl"
+}
+
+func (this *BaseAdminRouter) Post(){
+    this.TplName = "Post.tpl"
+}
+
+(2) 在表单中使用 PUT 方法
+首先表单本身还是使用 POST 方法提交, 但是可以在表单中添加一个隐藏字段:
+
+<form method="post" ...>
+  <input type="hidden" name="_method" value="put" />
+
+接着在 Beego 中添加一个过滤器来判断是否将请求当做 PUT 来解析:
+
+var FilterMethod = func(ctx *context.Context) {
+    if ctx.BeegoInput.Query("_method")!="" && ctx.BeegoInput.IsPost(){
+          ctx.Request.Method = ctx.BeegoInput.Query("_method")
+    }
+}
+
+beego.InsertFilter("*", beego.BeforeRouter, FilterMethod)
+
+(3) 提前终止运行
+type RController struct {
+    beego.Controller
+}
+
+func (this *RController) Prepare() {
+    this.Data["json"] = map[string]interface{}{"name": "astaxie"}
+    this.ServeJSON()
+    this.StopRun()
+}

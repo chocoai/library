@@ -1,0 +1,88 @@
+1. session
+(1) 配置
+beego.BConfig.WebConfig.Session.SessionOn = true
+或者
+sessionon = true
+(2) 使用
+func (this *MainController) Get() {
+    v := this.GetSession("asta")
+    if v == nil {
+        this.SetSession("asta", int(1))
+        this.Data["num"] = 0
+    } else {
+        this.SetSession("asta", v.(int)+1)
+        this.Data["num"] = v.(int)
+    }
+    this.TplName = "index.tpl"
+}
+
+a. controller session methods
+SetSession(name string, value interface{})
+GetSession(name string) interface{}
+DelSession(name string)
+SessionRegenerateID()
+DestroySession()
+
+b. session object
+sess.Set()
+sess.Get()
+sess.Delete()
+sess.SessionID()
+sess.Flush()
+
+sess:=this.StartSession()
+defer sess.SessionRelease()
+
+(3) SessionProvider
+file, mysql, redis, memcache, postgres, couchbase
+
+beego.BConfig.WebConfig.Session.SessionProvider
+beego.BConfig.WebConfig.Session.SessionProviderConfig
+
+2. ORM - UserInfo => user_info
+//注册驱动
+orm.RegisterDriver("mysql", orm.DR_MySQL)
+
+// 设置默认数据库
+//mysql用户：root ，密码：zxxx ， 数据库名称：test ， 数据库别名：default
+ orm.RegisterDataBase("default", "mysql", "root:zxxx@/test?charset=utf8")
+
+type User struct {
+    Id   int
+    Name string `orm:"size(100)"`
+}
+
+// 注册定义的 model
+orm.RegisterModel(new(User))
+
+// 创建 table
+orm.RunSyncdb("default", false, true)
+
+o := orm.NewOrm()
+
+user := User{Name: "slene"}
+
+// 插入表
+id, err := o.Insert(&user)
+fmt.Printf("ID: %d, ERR: %v\n", id, err)
+
+// 更新表
+user.Name = "astaxie"
+num, err := o.Update(&user)
+fmt.Printf("NUM: %d, ERR: %v\n", num, err)
+
+// 读取 one
+u := User{Id: user.Id}
+err = o.Read(&u)
+fmt.Printf("ERR: %v\n", err)
+
+// 删除表
+num, err = o.Delete(&u)
+fmt.Printf("NUM: %d, ERR: %v\n", num, err)
+
+orm.SetMaxIdleConns("default", 30)
+
+orm.SetMaxOpenConns("default", 30)
+
+orm.Debug = true
+
