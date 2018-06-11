@@ -1,22 +1,82 @@
-1. rails generate controller home index welcome about contact
+1. index, show, new, edit, create, update, destroy
+2. GET, POST, PUT, PATCH, DELETE
+3. resource routing
+resources :photos
 
-2. config/routes.rb
-get 'home/index'
-get 'home/welcome'
-get 'home/about'
-get 'home/contact'
+GET         /photos             photos#index     display a list of all photos
+GET         /photos/new         photos#new       return an HTML form for creating a new photo
+POST        /photos             photos#create    create a new photo
+GET         /photos/:id         photos#show      display a specific photo
+GET         /photos/:id/edit    photos#edit      return an HTML form for editing a photo
+PATCH/PUT   /photos/:id         photos#update    update a specific photo
+DELETE      /photos/:id         photos#destroy   delete a specific photo
 
-3. '/'
-get '/', to: 'home#index'
-OR
-root 'home#index'
+FOUR URLs maps to SEVEN different actions
 
-4. get '/something/:controller/:name/:action'
-/something/home/aaa/index
----解释---
-something 是个前缀
-访问的 controller 是 home
-name 参数是 aaa
-方法是 index
+4. Path and URL helpers
+resources :photos
 
-5. match ':controller/:action/:id', via: [:get, :post]
+(1) photo_path returns /photos
+(2) new_photo_path returns /photos/new
+(3) edit_photo_path(:id) returns /photos/:id/edit
+(for instance, edit_photo_path(10) returns /photos/10/edit)
+(4) photo_path(:id) returns /photos/:id
+
+5. singular resources
+get 'profile', to: 'users#show'
+get 'profile', action: :show, controller: 'users'
+
+resource :geocoder
+resolve('Geocoder') { [:geocoder] }
+
+GET         /geocoder/new         geocoders#new       return an HTML form for creating a new geocoder
+POST        /geocoder             geocoders#create    create a new geocoder
+GET         /geocoder/:id         geocoders#show      display the one and only geocoder resource
+GET         /geocoder/:id/edit    geocoders#edit      return an HTML form for editing the geocoder
+PATCH/PUT   /geocoder/:id         geocoders#update    update the one and only geocoder resource
+DELETE      /geocoder/:id         geocoders#destroy   delete the geocoder resource
+
+new_geocoder_path returns /geocoder/new
+edit_geocoder_path returns /geocoder/edit
+geocoder_path returns /geocoder
+
+6. controller namespaces and routing
+app/controllers/admin
+
+namespace :admin do
+  resources :articles, :comments
+end
+
+GET         /admin/articles             admin/articles#index    admin_articles_path
+GET         /admin/articles/new         admin/articles#new      new_admin_article_path
+POST        /admin/articles             admin/articles#create   admin_articles_path
+GET         /admin/articles/:id         admin/articles#show     admin_article_path(:id)
+GET         /admin/articles/:id/edit    admin/articles#edit     edit_admin_article_path(:id)
+PATCH/PUT   /admin/articles/:id         admin/articles#update   admin_article_path(:id)
+DELETE      /admin/articles/:id         admin/articles#destroy  admin_article_path(:id)
+
+7. route /articles to Admin::ArticlesController
+scope module: 'admin' do
+  resources :articles, :comments
+end
+或者
+resources :articles, module: 'admin'
+
+8. route /admin/articles to ArticlesController without Admin:: module prefix
+scope '/admin' do
+  resources :articles, :comments
+end
+或者
+resources :articles, path: '/admin/articles'
+
+GET         /admin/photos             photos#index     display a list of all photos
+GET         /ammin/photos/new         photos#new       return an HTML form for creating a new photo
+POST        /ammin/photos             photos#create    create a new photo
+GET         /ammin/photos/:id         photos#show      display a specific photo
+GET         /ammin/photos/:id/edit    photos#edit      return an HTML form for editing a photo
+PATCH/PUT   /ammin/photos/:id         photos#update    update a specific photo
+DELETE      /ammin/photos/:id         photos#destroy   delete a specific photo
+
+9. get '/foo' => '/foo#index'
+
+TO BE CONTINUED (2.7)
