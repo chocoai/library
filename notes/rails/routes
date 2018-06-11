@@ -29,12 +29,12 @@ get 'profile', action: :show, controller: 'users'
 resource :geocoder
 resolve('Geocoder') { [:geocoder] }
 
-GET         /geocoder/new         geocoders#new       return an HTML form for creating a new geocoder
-POST        /geocoder             geocoders#create    create a new geocoder
-GET         /geocoder/:id         geocoders#show      display the one and only geocoder resource
-GET         /geocoder/:id/edit    geocoders#edit      return an HTML form for editing the geocoder
-PATCH/PUT   /geocoder/:id         geocoders#update    update the one and only geocoder resource
-DELETE      /geocoder/:id         geocoders#destroy   delete the geocoder resource
+GET         /geocoder/new      geocoders#new       return an HTML form for creating a new geocoder
+POST        /geocoder          geocoders#create    create a new geocoder
+GET         /geocoder/         geocoders#show      display the one and only geocoder resource
+GET         /geocoder/edit     geocoders#edit      return an HTML form for editing the geocoder
+PATCH/PUT   /geocoder/         geocoders#update    update the one and only geocoder resource
+DELETE      /geocoder/         geocoders#destroy   delete the geocoder resource
 
 new_geocoder_path returns /geocoder/new
 edit_geocoder_path returns /geocoder/edit
@@ -79,4 +79,101 @@ DELETE      /ammin/photos/:id         photos#destroy   delete a specific photo
 
 9. get '/foo' => '/foo#index'
 
-TO BE CONTINUED (2.7)
+10. nested resources - Resources should never be nested more than 1 level deep.
+class Magzine < ApplicationRecord
+   has_many :ads
+end
+
+class Ad < ApplicationRecord
+   belongs_to :magzine
+end
+
+resources :magzines do
+   resources :ads
+end
+
+GET 	    /magazines/:magazine_id/ads 	        ads#index    	display a list of all ads for a specific magazine
+GET 	    /magazines/:magazine_id/ads/new 	    ads#new         return an HTML form for creating a new ad belonging to a specific magazine
+POST 	    /magazines/:magazine_id/ads 	        ads#create    	create a new ad belonging to a specific magazine
+GET 	    /magazines/:magazine_id/ads/:id 	    ads#show        display a specific ad belonging to a specific magazine
+GET 	    /magazines/:magazine_id/ads/:id/edit 	ads#edit        return an HTML form for editing an ad belonging to a specific magazine
+PATCH/PUT 	/magazines/:magazine_id/ads/:id 	    ads#update    	update a specific ad belonging to a specific magazine
+DELETE 	    /magazines/:magazine_id/ads/:id 	    ads#destroy 	delete a specific ad belonging to a specific magazine
+
+helpers: magzine_ads_url, edit_magzine_ad_path, etc
+
+11. routing concerns
+concern :commentable do
+  resources :comments
+end
+ 
+concern :image_attachable do
+  resources :images, only: :index
+end
+
+resources :messages, concerns: :commentable
+resources :articles, concerns: [:commentable, :image_attachable]
+<=>
+resources :messages do
+  resources :comments
+end
+ 
+resources :articles do
+  resources :comments
+  resources :images, only: :index
+end
+
+[ALSO]
+namespace :articles do
+  concerns :commentable
+end
+
+12. shadow nesting
+resources :articles do
+  resources :comments, only: [:index, :new, :create]
+end
+resources :comments, only: [:show, :edit, :update, :destroy]
+<=>
+resources :articles do
+  resources :comments, shallow: true
+end
+
+resources :articles, shallow: true do
+  resources :comments
+  resources :quotes
+  resources :drafts
+end
+<=>
+shallow do
+  resources :articles do
+    resources :comments
+    resources :quotes
+    resources :drafts
+  end
+end
+
+scope shallow_path: "sekret" do
+  resources :articles do
+    resources :comments, shallow: true
+  end
+end
+
+scope shallow_prefix: "sekret" do
+  resources :articles do
+    resources :comments, shallow: true
+  end
+end
+
+13. Creating Paths and URLs From Objects
+
+resources :magazines do
+  resources :ads
+end
+
+magzine_ad_path
+<%= link_to 'Ad details', magazine_ad_path(@magazine, @ad) %>
+<%= link_to 'Ad details', url_for([@magazine, @ad]) %>
+<%= link_to 'Ad details', [@magazine, @ad] %>
+<%= link_to 'Magazine details', @magazine %>
+<%= link_to 'Edit Ad', [:edit, @magazine, @ad] %>
+
