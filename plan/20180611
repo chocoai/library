@@ -1,0 +1,25 @@
+1. beego
+(1) routing
+(2) orm
+
+2. db
+
+3. oauth2 procedure
+(1) /login
+(2) /register
+(3) /v1/oauth2/authorize
+(4) /v1/user/login
+(5) /v1/user/grants
+
+4. php sdk
+(1) install
+
+5. js sdk
+
+Q1. KYC procedure
+Q2. PHP SDK running
+Q3. JS SDK running
+Q4. DB structure
+Q5. DB design
+Q6. API Definition
+Q7. peatio codes study

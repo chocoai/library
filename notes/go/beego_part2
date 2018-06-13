@@ -86,3 +86,7 @@ orm.SetMaxOpenConns("default", 30)
 
 orm.Debug = true
 
+
+#########################
+var oa db.OauthApplications
+err := o.QueryTable("oauth_applications").Filter("id", appClientId).One(&oa)

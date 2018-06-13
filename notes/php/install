@@ -1,0 +1,10 @@
+1. check nginx
+sudo netstat -tlpn
+sudo systemctl status nginx.service
+
+2. check php-fpm
+sudo systemctl status php5.6-fpm
+sudo systemctl start php5.6-fpm
+
+3. config php-fpm
+/etc/php/5.6/fpm/pool.d/www.conf
