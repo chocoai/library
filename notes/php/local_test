@@ -1,0 +1,21 @@
+1. src/Won/Authentication/OAuth2Client.php
+const BASE_AUTHORIZATION_URL = 'http://127.0.0.1:5000';
+
+2. example/won-example.php
+$redirectURL = "http://127.0.0.1/won/sdk/php/example/won-callback.php"
+
+3. src/Won/WonClient.php
+const BASE_API_URL = 'http://127.0.0.1:5000'
+
+4. oauth_applications
+redirect_uri: http://127.0.0.1/won/sdk/php/example/won-callback.php
+
+附录
+A. php -i 
+/etc/php/5.6/cli/conf.d/json.ini
+extension=json.so
+
+B. info.php
+<?php
+phpinfo();
+?>
