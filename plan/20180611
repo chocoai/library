@@ -11,21 +11,28 @@
 (4) /v1/user/login
 (5) /v1/user/grants
 (6) /v1/oauth2/access_token
+(7) /v1/oauth2/xd_proxy_iframe
+(8) /v1/user/login_status
+(9) /v1/oauth2/xd_proxy
+(10) /v1/user/me
+(11) /v1/kyc/index
+(12) /v1/kyc/send_email
+(13) /v1/kyc/send_sms_code
+(14) /v1/kyc/check_sms_code
 
 4. php sdk
 (1) install
 (2) runing
 
 5. js sdk
+(1) running
 
 6. new peatio
 (1) running
 (2) setup-ubuntu.md
 
-Q1. KYC procedure <>
-Q2. API - Access token <>
-Q3. JS SDK running
-Q4. DB structure <>
-Q5. DB design
-Q6. API Definition
-Q7. peatio knowledge <>
+Q1. KYC procedure <2>
+Q2. DB structure <3>
+Q3. DB design
+Q4. API Definition
+Q5. peatio knowledge <4>
