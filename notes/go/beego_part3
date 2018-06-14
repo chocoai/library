@@ -1,0 +1,173 @@
+1. code tips - 需要进一步细化为具体调用的流程
+(1) beego/app.go
+var (
+	// BeeApp is an application instance
+	BeeApp *App
+)
+
+func init() {
+	// create beego application
+	BeeApp = NewApp()
+}
+
+// App defines beego application with a new PatternServeMux.
+type App struct {
+	Handlers *ControllerRegister
+	Server   *http.Server
+}
+
+// NewApp returns a new beego application.
+func NewApp() *App {
+	cr := NewControllerRegister()
+	app := &App{Handlers: cr, Server: &http.Server{}}
+	return app
+}
+
+(2) ControllerRegister
+func NewControllerRegister() *ControllerRegister {
+	cr := &ControllerRegister{
+		routers:  make(map[string]*Tree),
+		policies: make(map[string]*Tree),
+	}
+	cr.pool.New = func() interface{} {
+		return beecontext.NewContext()
+	}
+	return cr
+}
+
+(3) beego/context/context.go
+// NewContext return the Context with Input and Output
+func NewContext() *Context {
+	return &Context{
+		Input:  NewInput(),
+		Output: NewOutput(),
+	}
+}
+
+// Context Http request context struct including BeegoInput, BeegoOutput, http.Request and http.ResponseWriter.
+// BeegoInput and BeegoOutput provides some api to operate request and response more easily.
+type Context struct {
+	Input          *BeegoInput
+	Output         *BeegoOutput
+	Request        *http.Request
+	ResponseWriter *Response
+	_xsrfToken     string
+}
+
+(4) Controller
+a. controllers/v1/OAuth2Controller.go
+type OAuth2Controller struct {
+    controllers.BaseController
+    needSaveAccessToken bool
+    authResponse        *osin.Response
+    appInfo             *models.AppInfo
+}
+
+b. controllers/BaseController.go
+type BaseController struct {
+    beego.Controller // Embed struct that has stub implementation of the interface.
+    i18n.Locale      // For i18n usage when process data and render template.
+    ErrorCode int
+}
+
+c. beego/controller.go
+// Controller defines some basic http request handler operations, such as
+// http context, template and view, session and xsrf.
+type Controller struct {
+	// context data
+	Ctx  *context.Context
+	Data map[interface{}]interface{}
+
+	// route controller info
+	controllerName string
+	actionName     string
+	methodMapping  map[string]func() //method:routertree
+	gotofunc       string
+	AppController  interface{}
+
+	// template data
+	TplName        string
+	ViewPath       string
+	Layout         string
+	LayoutSections map[string]string // the key is the section name and the value is the template name
+	TplPrefix      string
+	TplExt         string
+	EnableRender   bool
+
+	// xsrf data
+	_xsrfToken string
+	XSRFExpire int
+	EnableXSRF bool
+
+	// session
+	CruSession session.Store
+}
+
+// ControllerInterface is an interface to uniform all controller handler.
+type ControllerInterface interface {
+	Init(ct *context.Context, controllerName, actionName string, app interface{})
+	Prepare()
+	Get()
+	Post()
+	Delete()
+	Put()
+	Head()
+	Patch()
+	Options()
+	Finish()
+	Render() error
+	XSRFToken() string
+	CheckXSRFCookie() bool
+	HandlerFunc(fn string) bool
+	URLMapping()
+}
+
+(5) beego/config.go
+func init() {
+	BConfig = newBConfig()
+	var err error
+	if AppPath, err = filepath.Abs(filepath.Dir(os.Args[0])); err != nil {
+		panic(err)
+	}
+	workPath, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	var filename = "app.conf"
+	if os.Getenv("BEEGO_MODE") != "" {
+		filename = os.Getenv("BEEGO_MODE") + ".app.conf"
+	}
+	appConfigPath = filepath.Join(workPath, "conf", filename)
+	if !utils.FileExists(appConfigPath) {
+		appConfigPath = filepath.Join(AppPath, "conf", filename)
+		if !utils.FileExists(appConfigPath) {
+			AppConfig = &beegoAppConfig{innerConfig: config.NewFakeConfig()}
+			return
+		}
+	}
+	if err = parseConfig(appConfigPath); err != nil {
+		panic(err)
+	}
+}
+
+(6) net/http/server.go - serve
+    net/http/server.go - serverHandler.ServeHTTP  
+    beego/router.go - ControllerRegister.ServeHTTP
+
+http/server.go
+type Handler interface {
+	ServeHTTP(ResponseWriter, *Request)
+}
+
+ControllerRegister.ServeHTTP
+    context := p.pool.Get().(*beecontext.Context)
+    context.Reset(rw, r)
+    defer p.pool.Put(context)
+
+    execController.Init(context, runRouter.Name(), runMethod, execController)
+    execController.Prepare()
+
+    ...
+
+    execController.Render()
+    execController.Finish()
