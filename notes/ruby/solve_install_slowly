@@ -1,0 +1,4 @@
+RUBY_BUILD_MIRROR_URL=/home/majun/download/ruby-2.5.0.tar.bz2#
+rbenv install 2.5.0
+rbenv global 2.5.0
+

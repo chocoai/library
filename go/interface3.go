@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -12,8 +11,9 @@ type I interface {
 
 type S struct{ i int }
 
-func (p *S) Get() int  { return p.i }
-func (p *S) Put(v int) { p.i = v }
+func (p *S) Get() int { return p.i }
+
+//func (p *S) Put(v int) { p.i = v }
 
 type R struct{ i int }
 
@@ -27,7 +27,10 @@ func f1(p I) {
 
 //interface{}空接口，能接受任何类型。.(I)是类型断言，用于转换something到I类型的接口
 func f2(p interface{}) {
-	if t, ok := p.(S); ok {
+	fmt.Println(p)
+	t, ok := p.(S)
+	fmt.Println(t, ok)
+	if t, ok = p.(S); ok {
 		fmt.Println("S:", t)
 	} else if t, ok := p.(I); ok {
 		fmt.Println("I:", t.Get())
@@ -50,7 +53,7 @@ func f3(p interface{}) {
 func main() {
 	s := S{101}
 
-	f1(&s)
+	//f1(&s)
 	f2(&s)
 
 	r := R{1111}
