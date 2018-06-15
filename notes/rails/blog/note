@@ -1,0 +1,19 @@
+1. rails new blog
+2. bin/rails generate controller Welcome index
+Running via Spring preloader in process 4835
+      create  app/controllers/welcome_controller.rb
+       route  get 'welcome/index'
+      invoke  erb
+      create    app/views/welcome
+      create    app/views/welcome/index.html.erb
+      invoke  test_unit
+      create    test/controllers/welcome_controller_test.rb
+      invoke  helper
+      create    app/helpers/welcome_helper.rb
+      invoke    test_unit
+      invoke  assets
+      invoke    coffee
+      create      app/assets/javascripts/welcome.coffee
+      invoke    scss
+      create      app/assets/stylesheets/welcome.scss
+
