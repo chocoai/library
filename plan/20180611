@@ -1,10 +1,12 @@
 1. beego
 (1) routing
 (2) orm
+(3) calling procedure for each HTTP request
 
 2. db
+(1) compare old peatio db and new peatio db
 
-3. oauth2 procedure
+3. oauth2 procedure including login procedure
 (1) /login
 (2) /register
 (3) /v1/oauth2/authorize
@@ -32,11 +34,13 @@
 7. new peatio
 (1) running
 (2) setup-ubuntu.md
-(3) install review <>
-(4) ruby & rails knowledge <>
-(5) debugging <>
+(3) install review
+(4) ruby & rails knowledge
+(5) debugging
 
 Q1. DB structure <2>
 Q2. DB design
 Q3. API Definition
 Q4. peatio knowledge <1>
+Q5. Ethereum
+Q6. Won

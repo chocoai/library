@@ -9,4 +9,7 @@ rbenv global 2.2.1
 rbenv local 2.5.0
 (5) rbenv rehash # 每当切换ruby版本和bundle install之后必须执行的命令
 
-3.
+3. bundle exec rails server
+4. bundle exec rake ... - Rakefile
+
+5. ruby block concept
