@@ -1,4 +1,5 @@
 1. exec $SHELL
+
 2. rbenv commands
 (1) echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 (2) rbenv install --list
@@ -8,3 +9,4 @@ rbenv global 2.2.1
 rbenv local 2.5.0
 (5) rbenv rehash # 每当切换ruby版本和bundle install之后必须执行的命令
 
+3.

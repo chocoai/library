@@ -1,0 +1,7 @@
+1. rake assets:precompile
+预编译 app/assets　文件夹中的静态资源文件
+2. rake asset:clean
+任务会把编译好的静态资源文件删除
+3. rake about
+ruby版本、rails版本、rubygems版本
+4. rake --tasks
