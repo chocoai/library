@@ -17,3 +17,110 @@ Running via Spring preloader in process 4835
       invoke    scss
       create      app/assets/stylesheets/welcome.scss
 
+app/views/welcome/index.html.erb
+<h1>Hello, Rail!</h1>
+
+config/routes.rb
+Rails.application.routes.draw do
+  get 'welcome/index'
+ 
+  root 'welcome#index'
+end
+
+3. resources :articles
+Rails.application.routes.draw do
+  get 'welcome/index'
+ 
+  resources :articles
+ 
+  root 'welcome#index'
+end
+
+=>
+
+       Prefix Verb   URI Pattern                  Controller#Action
+welcome_index GET    /welcome/index(.:format)     welcome#index
+     articles GET    /articles(.:format)          articles#index
+              POST   /articles(.:format)          articles#create
+  new_article GET    /articles/new(.:format)      articles#new
+ edit_article GET    /articles/:id/edit(.:format) articles#edit
+      article GET    /articles/:id(.:format)      articles#show
+              PATCH  /articles/:id(.:format)      articles#update
+              PUT    /articles/:id(.:format)      articles#update
+              DELETE /articles/:id(.:format)      articles#destroy
+         root GET    /                            welcome#index
+
+bin/rails generate controller Articles
+Running via Spring preloader in process 13165
+      create  app/controllers/articles_controller.rb
+      invoke  erb
+      create    app/views/articles
+      invoke  test_unit
+      create    test/controllers/articles_controller_test.rb
+      invoke  helper
+      create    app/helpers/articles_helper.rb
+      invoke    test_unit
+      invoke  assets
+      invoke    coffee
+      create      app/assets/javascripts/articles.coffee
+      invoke    scss
+      create      app/assets/stylesheets/articles.scss
+
+class ArticlesController < ApplicationController
+    def new
+    end   
+end       
+
+app/views/articles/new.html.erb
+<%= form_for :article, url: articles_path do |f| %>
+    <p>
+        <%= f.label :title %><br>
+        <%= f.text_field :title %>
+    </p>
+
+    <p>
+        <%= f.label :text %><br>
+        <%= f.text_area :text %>
+    </p>   
+     
+    <p>
+        <%= f.submit %>
+    </p>
+<% end %>
+
+class ArticlesController < ApplicationController
+    def new
+    end   
+    def create
+        render plain: params[:article].inspect
+    end
+end
+=>
+<ActionController::Parameters {"title"=>"a", "text"=>"b"} permitted: false>
+
+bin/rails generate model Article title:string text:text
+Running via Spring preloader in process 27426
+      invoke  active_record
+      create    db/migrate/20180615143827_create_articles.rb
+      create    app/models/article.rb
+      invoke    test_unit
+      create      test/models/article_test.rb
+      create      test/fixtures/articles.yml
+
+bin/rails db:migrate
+
+def create
+    @article = Article.new(article_params)
+    
+    @article.save
+    redirect_to @article
+end
+private 
+    def article_params
+        params.require(:article).permit(:title, :text)
+    end
+
+def show
+    @article = Article.find(params[:id])
+end                                
+
