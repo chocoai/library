@@ -27,12 +27,16 @@
 5. js sdk
 (1) running
 
-6. new peatio
+6. KYC procedure
+
+7. new peatio
 (1) running
 (2) setup-ubuntu.md
+(3) install review <>
+(4) ruby & rails knowledge <>
+(5) debugging <>
 
-Q1. KYC procedure <2>
-Q2. DB structure <3>
-Q3. DB design
-Q4. API Definition
-Q5. peatio knowledge <4>
+Q1. DB structure <2>
+Q2. DB design
+Q3. API Definition
+Q4. peatio knowledge <1>
