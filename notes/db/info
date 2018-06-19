@@ -1,0 +1,35 @@
+1. /v1/user/register
+identities: email
+members: email
+id_documents: member_id
+accounts: member_id
+authentications: uid, member_id
+tokens: member_id, token, expire_at
+signup_histories: member_id, [ip, accept_language, ua]
+
+2. /v1/user/login
+identities: email
+
+3. /v1/oauth2/authorize
+oauth_applications: app_id, name, secret, redirect_uri
+oauth_access_grants: application_id, resource_owner_id
+
+4. /v1/user/grants
+oauth_access_grants: application_id, resource_owner_id, scopes
+oauth_app_user: uid, app_id, app_uid
+oauth_access_tokens: N/A
+
+5. /v1/user/access_token
+oauth_access_grants: application_id, resource_owner_id, tokens
+
+6. /v1/kyc/index
+kycs
+
+7. /v1/kyc/send_email
+models/mail.go - SendActiveEmail
+
+8. /v1/kyc/send_sms_code
+kycs
+
+9. /v1/kyc/check_sms_code
+kycs
