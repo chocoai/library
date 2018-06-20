@@ -1,3 +1,4 @@
+############ 20180611-20180618 ##########
 1. beego
 (1) routing
 (2) orm
@@ -38,9 +39,20 @@
 (4) ruby & rails knowledge
 (5) debugging
 
-Q1. DB structure <2>
-Q2. DB design
-Q3. API Definition
-Q4. peatio knowledge <1>
-Q5. Ethereum
-Q6. Won
+
+############ 20180619-20180625 ##########
+Development
+1. login
+(1) API接口定义 - 更新API.md
+(2) DB - 切换新的数据库，检查完整性
+(3) 登录页面设计 - 国家、手机号、验证码
+(4) Golang API - /login, /v1/login/send_sms_code, /v1/login（删除所有邮箱登录的部分）
+(4) PHP & JS SDK
+(5) 去掉无用的部分
+
+2. KYC
+3. PIN
+
+Study
+1. Ethereum
+2. Won
