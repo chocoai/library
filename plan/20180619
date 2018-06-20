@@ -56,3 +56,10 @@ Development
 Study
 1. Ethereum
 2. Won
+
+TODO
+1. beego script manager
+2. go mq consumer script
+3. beego redis client and doc
+
+4. check sms code - time out
