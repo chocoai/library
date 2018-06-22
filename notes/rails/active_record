@@ -1,0 +1,221 @@
+如果数据库不支持事务，那么当迁移失败时，已成功的那部分操作将无法回滚。这种情况下只能手动完成相应的回滚操作。[无法撤销]
+1. bin/rails generate model Article title:string text:text
+db/migrate/YYYYMMDDHHMMSS_create_articles.rb
+
+class CreateArticles < ActiveRecord::Migration[5.0]
+  def change
+    create_table :articles do |t|
+      t.string :title
+      t.text :text
+ 
+      t.timestamps
+    end
+  end
+end
+
+2. bin/rails generate migration AddPartNumberToProducts
+class AddPartNumberToProducts < ActiveRecord::Migration[5.0]
+  def change
+  end
+end
+
+3. bin/rails generate migration AddPartNumberToProducts part_number:string
+class AddPartNumberToProducts < ActiveRecord::Migration[5.0]
+  def change
+    add_column :products, :part_number, :string
+  end
+end
+
+4. bin/rails generate migration AddPartNumberToProducts part_number:string:index
+class AddPartNumberToProducts < ActiveRecord::Migration[5.0]
+  def change
+    add_column :products, :part_number, :string
+    add_index :products, :part_number
+  end
+end
+
+5. bin/rails generate migration RemovePartNumberFromProducts part_number:string
+如果提供了字段类型作为第三个参数，那么 remove_column 是可撤销的。别忘了提供原来字段的选项，否则 Rails 在回滚时就无法准确地重建字段了 [无法撤销]
+class RemovePartNumberFromProducts < ActiveRecord::Migration[5.0]
+  def change
+    remove_column :products, :part_number, :string
+  end
+end
+
+6. bin/rails generate migration AddDetailsToProducts part_number:string price:decimal
+class AddDetailsToProducts < ActiveRecord::Migration[5.0]
+  def change
+    add_column :products, :part_number, :string
+    add_column :products, :price, :decimal
+  end
+end
+
+7. bin/rails generate migration CreateProducts name:string part_number:string
+class CreateProducts < ActiveRecord::Migration[5.0]
+  def change
+    create_table :products do |t|
+      t.string :name
+      t.string :part_number
+    end
+  end
+end
+
+8. bin/rails generate migration AddUserRefToProducts user:references
+class AddUserRefToProducts < ActiveRecord::Migration[5.0]
+  def change
+    add_reference :products, :user, foreign_key: true
+  end
+end
+
+这个迁移会创建 user_id 字段并添加索引
+
+9. bin/rails g migration CreateJoinTableCustomerProduct customer product
+class CreateJoinTableCustomerProduct < ActiveRecord::Migration[5.0]
+  def change
+    create_join_table :customers, :products do |t|
+      # t.index [:customer_id, :product_id]
+      # t.index [:product_id, :customer_id]
+    end
+  end
+end
+
+#############################################################################
+1. 创建数据表 (primary_key: , id: false)
+create_table :products, options: "ENGINE=BLACKHOLE" do |t|
+  t.string :name, null: false
+end
+
+2. 修改数据表
+change_table :products do |t|
+  t.remove :description, :name
+  t.string :part_number
+  t.index :part_number
+  t.rename :upccode, :upc_code
+end
+
+3. 修改字段
+change_column :products, :part_number, :text
+change_column_null :products, :name, false
+change_column_default :products, :approved, from: true, to: false
+change_column_default :products, :approved, false [无法撤销]
+
+4. 字段修饰符
+limit 修饰符：设置 string/text/binary/integer 字段的最大长度。
+precision 修饰符：定义 decimal 字段的精度，表示数字的总位数。
+scale 修饰符：定义 decimal 字段的标度，表示小数点后的位数。
+polymorphic 修饰符：为 belongs_to 关联添加 type 字段。
+null 修饰符：设置字段能否为 NULL 值。
+default 修饰符：设置字段的默认值。请注意，如果使用动态值（如日期）作为默认值，那么默认值只会在第一次使时（如应用迁移的日期）计算一次。
+index 修饰符：为字段添加索引。
+comment 修饰符：为字段添加注释。
+
+class AddDetailsToProducts < ActiveRecord::Migration[5.0]
+  def change
+    add_column :products, :price, :decimal, precision: 5, scale: 2
+    add_reference :products, :supplier, polymorphic: true
+  end
+end
+
+5. 外键
+add_foreign_key :articles, :authors
+
+# 让 Active Record 找出列名
+remove_foreign_key :accounts, :branches
+ 
+# 删除特定列上的外键
+remove_foreign_key :accounts, column: :owner_id
+ 
+# 通过名称删除外键
+remove_foreign_key :accounts, name: :special_fk_name
+
+6. 灵活方法
+Product.connection.execute("UPDATE products SET price = 'free' WHERE 1=1")
+
+7. 使用revisible方法
+撤销复杂迁移所需的操作有一些是 Rails 无法自动完成的，这时可以使用 reversible 方法指定运行和撤销迁移所需的操作。例如：
+class ExampleMigration < ActiveRecord::Migration[5.0]
+  def change
+    create_table :distributors do |t|
+      t.string :zipcode
+    end
+ 
+    reversible do |dir|
+      dir.up do
+        # 添加 CHECK 约束
+        execute <<-SQL
+          ALTER TABLE distributors
+            ADD CONSTRAINT zipchk
+              CHECK (char_length(zipcode) = 5) NO INHERIT;
+        SQL
+      end
+      dir.down do
+        execute <<-SQL
+          ALTER TABLE distributors
+            DROP CONSTRAINT zipchk
+        SQL
+      end
+    end
+ 
+    add_column :users, :home_page_url, :string
+    rename_column :users, :email, :email_address
+  end
+end
+使用 reversible 方法可以确保指令按正确的顺序执行。在上面的代码中，撤销迁移时，down 块会在删除 home_page_url 字段之后、删除 distributors 数据表之前运行。
+
+class ExampleMigration < ActiveRecord::Migration[5.0]
+  def up
+    create_table :distributors do |t|
+      t.string :zipcode
+    end
+ 
+    # 添加 CHECK 约束
+    execute <<-SQL
+      ALTER TABLE distributors
+        ADD CONSTRAINT zipchk
+        CHECK (char_length(zipcode) = 5);
+    SQL
+ 
+    add_column :users, :home_page_url, :string
+    rename_column :users, :email, :email_address
+  end
+ 
+  def down
+    rename_column :users, :email_address, :email
+    remove_column :users, :home_page_url
+ 
+    execute <<-SQL
+      ALTER TABLE distributors
+        DROP CONSTRAINT zipchk
+    SQL
+ 
+    drop_table :distributors
+  end
+end
+
+8. bin/rails db:migrate VERSION=20080906120000
+Rails 提供了一套用于运行迁移的 bin/rails 任务。其中最常用的是 rails db:migrate 任务，
+用于调用所有未运行的迁移中的 chagne 或 up 方法。如果没有未运行的迁移，任务会直接退出。调用顺序是根据迁移文件名的时间戳确定的。
+
+请注意，执行 db:migrate 任务时会自动执行 db:schema:dump 任务，这个任务用于更新 db/schema.rb 文件，以匹配数据库结构。
+
+如果版本 20080906120000 高于当前版本（换句话说，是向上迁移），上面的命令会按顺序运行迁移直到运行完 20080906120000 版本，之后的版本都不会运行。如果是向下迁移（即版本 20080906120000 低于当前版本），上面的命令会按顺序运行 20080906120000 版本之前的所有迁移，不包括 20080906120000 版本。
+
+9. 回滚
+bin/rails db:rollback
+bin/rails db:rollback STEP=3
+bin/rails db:migrate:redo STEP=3
+
+10. 其他操作
+rails db:setup
+rails db:reset <=> rails db:drop db:setup
+
+bin/rails db:migrate:up VERSION=20080906120000
+上面的命令会运行 20080906120000 这个迁移，调用它的 change 或 up 方法。db:migrate:up 任务会检查指定迁移是否已经运行过，如果已经运行过就不会执行任何操作。
+
+
+要是不想让 Active Record 生成任何输出，可以使用 rails db:migrate VERBOSE=false。
+
+11. 不同环境迁移
+bin/rails db:migrate 任务默认在开发环境中运行迁移。要想在其他环境中运行迁移，可以在执行任务时使用 RAILS_ENV 环境变量说明所需环境。例如，要想在测试环境中运行迁移，可以执行下面的命令：
+
+bin/rails db:migrate RAILS_ENV=test
