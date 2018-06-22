@@ -49,6 +49,9 @@ Development
 (4) Golang API - /login, /v1/login/send_sms_code, /v1/login（删除所有邮箱登录的部分）
 (4) PHP & JS SDK
 (5) 去掉无用的部分
+(6) 迁移数据库，编写ralis migration脚本 ##########
+(7) redigo
+(8) RabbitMQ + Send SMS Code sdk #########
 
 2. KYC
 3. PIN
@@ -56,10 +59,8 @@ Development
 Study
 1. Ethereum
 2. Won
+3. Active Record
 
 TODO
 1. beego script manager
 2. go mq consumer script
-3. beego redis client and doc
-
-4. check sms code - time out
