@@ -34,7 +34,7 @@ func main() {
 	conn := pool.Get()
 	defer conn.Close()
 
-	_, err := conn.Do("SET", "name", "majun")
+	_, err := conn.Do("SET", "name", "majun", "EX", 10)
 	if err != nil {
 		fmt.Println("redis set failed:", err)
 	}
