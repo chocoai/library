@@ -1,0 +1,22 @@
+1. bitcoind
+2. bitcoin-cli -testnet help
+区块总数
+bitcoin-cli -testnet getblockcount
+钱包信息
+bitcoin-cli -testnet getwalletinfo
+帐号信息
+bitcoin-cli -testnet listaddressgroupings
+bitcoin-cli -testnet listaccounts
+帐号的地址信息
+bitcoin-cli -testnet getaddressesbyaccount [ACCOUNT]
+钱包余额
+bitcoin-cli -testnet getbalance
+生成新的钱包地址
+bitcoin-cli -testnet getnewaddress
+查看地址信息
+bitcoin-cli -testnet validateaddress [ADDRESS]
+转账
+bitcoin-cli -testnet sendfrom "payment" 2NBqqKkezx1ndNL5Zx8Hy6vX5jW8eHBNLie 0.5
+查看交易信息
+bitcoin-cli -testnet gettransaction e156f796db1d8349e5fea7b763de06879b1ae9d18366ae532abb886cb3b6d31b
+bitcoin-cli -testnet listunspent

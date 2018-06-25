@@ -1,0 +1,75 @@
+############ 20180611-20180618 ##########
+1. beego
+(1) routing
+(2) orm
+(3) calling procedure for each HTTP request
+
+2. db
+(1) compare old peatio db and new peatio db
+
+3. oauth2 procedure including login procedure
+(1) /login
+(2) /register
+(3) /v1/oauth2/authorize
+(4) /v1/user/login
+(5) /v1/user/grants
+(6) /v1/oauth2/access_token
+(7) /v1/oauth2/xd_proxy_iframe
+(8) /v1/user/login_status
+(9) /v1/oauth2/xd_proxy
+(10) /v1/user/me
+(11) /v1/kyc/index
+(12) /v1/kyc/send_email
+(13) /v1/kyc/send_sms_code
+(14) /v1/kyc/check_sms_code
+
+4. php sdk
+(1) install
+(2) runing
+
+5. js sdk
+(1) running
+
+6. KYC procedure
+
+7. new peatio
+(1) running
+(2) setup-ubuntu.md
+(3) install review
+(4) ruby & rails knowledge
+(5) debugging
+
+############ 20180619-20180625 ##########
+Development
+1. login
+(1) API接口定义 - 更新API.md
+(2) DB - 切换新的数据库，检查完整性
+(3) 登录页面设计 - 国家、手机号、验证码 ###
+(4) Golang API - /login, /v1/login/send_sms_code, /v1/login（删除所有邮箱登录的部分） #####
+(4) PHP & JS SDK ####
+(5) 去掉无用的部分 ####
+(6) 学习Active Record，迁移数据库，编写ralis migration脚本 ###
+(7) redigo ####
+(8) 学习了RabbitMQ的多种工作模式，RabbitMQ发送sms code
+(9) 修改members表的获取逻辑
+
+2. KYC
+
+############ 20180619-20180625 ##########
+1. PIN支付
+2. Ethereum环境搭建
+3. Won环境搭建
+4. 支付流程总结
+(1) 简单的实现代码查看
+5. 部署方案
+6. 登录部分优化
+输入真名、生日、国家
+7. 交易所的API接口使用: a2.1won.com
+8. APP游戏交易相关的API: apia.1won.com
+9. peatio充值nodejs脚本: tpc, won, btc
+10. GAS - 许相贤
+11. 干特图 - 查找
+12. 公司文化
+
+Q1. 支付实现代码位置
+Q2. JS SDK增加L1信息输入

@@ -34,7 +34,6 @@ kycs
 kycs
 
 TODO
-1. rails active record
-2. go - models, related codes
-3. TwoFactors
-4. accounts - currecies
+1. go - models, related codes
+2. TwoFactors
+3. accounts - currencies
