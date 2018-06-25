@@ -1,0 +1,18 @@
+I. Componets
+1. geth
+2. web3.js
+3. solc
+4. ethminer
+5. netstat
+
+II. Using geth to (Frontier release)
+1. mine real ether
+2. transfer funds between addresses
+3. create contracts and send transactions
+4. explore block history
+5. and much more
+
+III. interfaces
+1. javascript console
+2. json-rpc server
+3. command-line 
