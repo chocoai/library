@@ -1,0 +1,5 @@
+1. create accounts
+geth --password <passwordfile> account new
+<OR>
+personal.newAccount("majun")
+0xc3c4f5366aae8e502c93823d6e429bb04b9d04ad

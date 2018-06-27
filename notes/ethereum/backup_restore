@@ -1,0 +1,9 @@
+1. ~/.ethereum (--datadir)
+2. ~/.ethereum/keystore: accounts
+3. geth upgradedb
+4. geth removedb
+This is useful for deleting an old chain and sync'ing to a new one. It only affects data directories that can be re-created on synchronisation and does not touch the keystore.
+5. blockchain import and export
+geth export <filename>
+geth export <filename> 0 29999
+geth import <filename>

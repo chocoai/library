@@ -1,0 +1,45 @@
+1. install
+
+2. 创建账号
+geth console
+personal.newAccount("majun")
+0xc3c4f5366aae8e502c93823d6e429bb04b9d04ad
+
+3. create a genesis block
+geth --datadir "/home/majun/.ethereum" init ~/.ethereum/genesis.json
+
+{
+    "alloc": {
+        "0xea5c99831c2e4a0e094facdbac1befcf6c92e543": {
+            "balance": "1000"
+        }
+    },
+    "nonce": "0x0000000000000042",
+    "difficulty": "0x020000",
+    "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "coinbase": "0x0000000000000000000000000000000000000000",
+    "timestamp": "0x00",
+    "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "extraData": "0x00000000",
+    "gasLimit": "0xffffffff",
+    "config": {
+        "chainId": 666,
+        "homesteadBlock": 0,
+        "eip155Block": 0,
+        "eip158Block": 0
+    }
+}
+
+4. 启动私链
+geth --identity "kavon"  --rpc --rpccorsdomain "http://localhost/eth" --datadir "/home/majun/.ethereum" --port "30303"  --rpcapi "db,eth,net,web3" --networkid 22222 console
+
+5. 查看节点信息
+net.listening
+admin.peers
+admin.nodeInfo
+
+6. 查看账户信息
+eth.accounts
+
+primary=eth.accounts[0]
+web3.fromWei(eth.getBalance(primary), "ether")

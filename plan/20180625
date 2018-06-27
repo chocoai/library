@@ -73,3 +73,13 @@ Development
 
 Q1. 支付实现代码位置
 Q2. JS SDK增加L1信息输入
+
+***********
+1. Ethereum
+2. Won链
+3. 查看peatio充值脚本
+4. 总结需要完善和增加的功能
+5. PIN支付
+6. 登录优化KYC等级1
+7. 查看支付流程和实现逻辑
+8. 优化accounts关于currency的处理
