@@ -1,0 +1,5 @@
+msgid "name"
+msgstr "宋驰"
+
+msgid "err_10030"
+msgstr "Login failed"
