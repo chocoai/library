@@ -25,7 +25,7 @@ func main() {
 */
 
 func main() {
-    l := gotext.NewLocale("/home/majun/repository/library/go/gettext/locales", "zh_CN")
+    l := *gotext.NewLocale("/home/majun/repository/library/go/gettext/locales", "zh-CN")
     l.AddDomain("default")
     l.AddDomain("test")
 

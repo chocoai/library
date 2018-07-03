@@ -44,50 +44,59 @@ Development
 1. login
 (1) API接口定义 - 更新API.md
 (2) DB - 切换新的数据库，检查完整性
-(3) 登录页面设计 - 国家、手机号、验证码 ###
-(4) Golang API - /login, /v1/login/send_sms_code, /v1/login（删除所有邮箱登录的部分） #####
-(4) PHP & JS SDK ####
-(5) 去掉无用的部分 ####
-(6) 学习Active Record，迁移数据库，编写ralis migration脚本 ###
-(7) redigo ####
+(3) 登录页面设计 - 国家、手机号、验证码
+(4) Golang API - /login, /v1/login/send_sms_code, /v1/login（删除所有邮箱登录的部分）
+(4) PHP & JS SDK
+(5) 去掉无用的部分
+(6) 学习Active Record，迁移数据库，编写ralis migration脚本
+(7) redigo
 (8) 学习了RabbitMQ的多种工作模式，RabbitMQ发送sms code
 (9) 修改members表的获取逻辑
 
 2. KYC
 
 ############ 20180619-20180625 ##########
-1. PIN支付 ##########
-2. Ethereum学习 ########
-3. Won学习 ########
-4. 支付流程总结
-(1) 简单的实现代码查看
-5. 部署方案
-6. 登录部分优化
-输入真名、生日、国家
-7. 交易所的API接口使用: a2.1won.com
-8. APP游戏交易相关的API: apia.1won.com
-9. peatio充值nodejs脚本: tpc, won, btc
-10. GAS - 许相贤
-11. 干特图 - 查找
-12. 公司文化
-13. peatio开发工作
+1. Ethereum学习，搭建了环境，熟悉了相关概念
+2. 登录优化KYC等级1: 输入真名、生日、国家
+3. 优化accounts表关于currency的处理
+4. 多语言框架golang实现完成
+5. 添加payments的数据库migration scripts
 
-***********
-1. Ethereum
-2. Won链
-3. 查看peatio充值脚本
-4. 总结需要完善和增加的功能
-5. PIN支付
-6. 登录优化KYC等级1
-7. 查看支付流程和实现逻辑 ##########
-(1) 熟悉一下代码
-8. 优化accounts关于currency的处理
-9. peatio功能分解 ########
-(1) framework => targets
-10. 多语言框架 #########
-(1) i18n
-11. paypal
-12. 手机API接口开发
+
+############ 20180702-20180708 ##########
+工作部分
+1. 支付 (golang, js, rails)
+(1) 流程总结
+(2) 目前的代码实现
+(3) PIN支付: 设置（包括初次设置和修改）、忘记找回、在支付时使用
+
+2. 手机API接口开发
+(1) 整理接口，并且进行分类
+(2) 认证方式（包括peatio认证）
+
+3. paypal
+
+4. 部署方案
+
+5. peatio功能分解
+(1) tasks
+(2) nodejs充值脚本
+(3) daemon
+(4) API
+
+6. KYC接口优化
+
+学习部分
+1. Won链学习
+2. 公司文化
+
+会议摘要
+1. 整理golang手机钱包APP接口
+2. 整理peatio手机钱包APP接口
+3. 指纹支付安全问题
+4. WON UI开发工作
+5. Pusher服务: a. golang实现 b. 接入peatio，可能会涉及比较大的改动，目前考虑尝试改配置
+########################################
 
 a) 支付订单的id,不能直接返回payments表的自增id.需要一个算法生成id
 b) 其次，从游戏服务器端调用过来的API接口，全部加入验证

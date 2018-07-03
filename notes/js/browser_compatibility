@@ -1,0 +1,3 @@
+IE8-:     attachEvent(IE8及其以前) 
+IE9-IE10: both attachEvent and addEventListerner(IE9-IE10)
+IE11+:    attachEventListener(IE11+)
