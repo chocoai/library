@@ -70,12 +70,22 @@ Development
 (2) 目前的代码实现
 (3) PIN支付: 设置（包括初次设置和修改）、忘记找回、在支付时使用
 (4) server_unique_flag逻辑
-(5) 登录接口的Accept-Language
-(6) 获取用户数据接口，同时需要包括根据ip识别国家的功能，下发国家名称和国家代码
+(5) 付款要保持出入平衡
 
 2. 手机API接口开发
 (1) 整理接口，并且进行分类，统一格式
-(2) 认证方式（包括peatio认证）
+a. 登录
+b. 发送短信验证码
+c. 获取用户数据
+d. 更新用户数据
+
+e. 显示授权信息
+f. 授权信息确认 ###
+g. 支付所有接口 ###
+
+(2) 认证方式（包括peatio认证）- jwt (Implementation TODO) ###
+(3) 获取用户数据接口，同时需要包括根据ip识别国家的功能，下发国家名称和国家代码
+(4) 登录接口的Accept-Language
 
 3. paypal
 
@@ -91,6 +101,10 @@ Development
 
 7. SDK
 (1) 了解APP SDK的实现
+
+8. beego automated api document ###
+
+9. gerrit ###
 
 学习部分
 1. Won链学习
