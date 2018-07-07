@@ -10,3 +10,4 @@
 ./kafka-consumer-offset-checker.sh --group vod_group --zookeeper 10.18.208.121:9092 --topic Topic-ChnInfo-From-LBSyncTask
 
 /usr/local/fountain/bin/syncpipe_III/syncpipe -c syncpipeconf/replication.config_246 -d
+
