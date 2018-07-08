@@ -83,7 +83,7 @@ e. 显示授权信息
 f. 授权信息确认
 g. 支付所有接口 ###
 
-(2) 认证方式（包括peatio认证）- jwt (Implementation TODO) ###
+(2) 认证方式（包括peatio认证）- jwt (Implementation TODO)
 (3) 获取用户数据接口，同时需要包括根据ip识别国家的功能，下发国家名称和国家代码
 (4) 登录接口的Accept-Language
 
