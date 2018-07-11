@@ -81,44 +81,76 @@ d. 更新用户数据
 
 e. 显示授权信息
 f. 授权信息确认
-g. 支付所有接口 ###
+g. 支付所有接口
 
 (2) 认证方式（包括peatio认证）- jwt (Implementation TODO)
-(3) 获取用户数据接口，同时需要包括根据ip识别国家的功能，下发国家名称和国家代码
-(4) 登录接口的Accept-Language
 
-3. paypal
+3. paypal（暂时不做）
 
 4. 部署方案
 
-5. peatio功能分解
+5. KYC接口优化
+
+6. SDK
+(1) 了解APP SDK的实现
+
+7. gerrit
+############ 20180709-20180715 ##########
+工作部分
+1. 手机API接口开发
+(1) 支付接口 ###
+修改现有创建订单的接口，放在tx_id字段里面: CreatePaymentInfo
+tx_id修改: 数据库、创建订单时的返回字段、支付确认的传输字段名称
+peatio对账平台，1和2账户
+item_sku
+signature: 三种方式 - 服务端之间主动被动，客户端，需要验证可行性
+自己可以给自己转账
+
+a. 获取订单信息
+b. 获取账户余额
+c. start to pay检查接口
+I. 大的超时 II. 异常操作
+d. 支付确认
+
+e. 获取充值支付方式列表
+f. 账户买入汇率查询
+g. 混合支付确认
+
+(2) PIN码支付
+
+2. JWT认证优化 ### 结合Oauth2
+
+3. peatio功能分解
 (1) tasks
 (2) nodejs充值脚本
 (3) daemon
 (4) API
 
-6. KYC接口优化
+4. beego automated api document
 
-7. SDK
-(1) 了解APP SDK的实现
-
-8. beego automated api document ###
-
-9. gerrit
+5. 修改oauth_access_grants表更新问题 ###
 
 学习部分
 1. Won链学习
 2. Google公司文化
+3. web socket实现代码
+4. 指纹支付安全问题
 
-会议摘要
-1. 整理golang手机钱包APP接口
-2. 整理peatio手机钱包APP接口
-3. 指纹支付安全问题
-4. WON UI开发工作
-5. Pusher服务: a. golang实现 b. 接入peatio，可能会涉及比较大的改动，目前考虑尝试改配置
+会议纪要
+1. 命名规范: client_id, app_uid
+
+
+会议纪要
+1. 命名规范: client_id, app_uid
+
+会议纪要
+1. 命名规范: client_id, app_uid
+2. 支付宝的找回密码流程
+3. won钱包充值和提款
+4. KYC认证添加won链钱包地址，调用won链接口
+5. 服务器之间的调用
+微信的服务器与服务器的通信是,帮商户生成:商户证书.p12, 然后在游戏的服务器端用这个生成相应的证书pem格式，与证书密钥pem格式，然后就可以验证了。
 ########################################
-
-a) 支付订单的id,不能直接返回payments表的自增id.需要一个算法生成id
 b) 其次，从游戏服务器端调用过来的API接口，全部加入验证
 c) web支付的时候，如果用户还没登录，需要加入登录的流程，如果还没验证KYC l1,需要加入L1资料填入流程。
 d) PIN的完整逻辑(初始设置,之后修改PIN,支付使用PIN,）
