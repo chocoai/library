@@ -1,5 +1,7 @@
+=begin
 module Majun
   #extend self
+  #class << self
   def public_method
     puts "public method"
   end
@@ -27,3 +29,23 @@ Majun.module_method
 Majun.private_method_1
 o.private_method_1
 o.private_method_2
+=end
+
+module Trig
+    #def Trig.test1
+    #extend self
+    class << self
+    def test1
+        puts "test1"
+    end
+
+    def test2
+        puts "test2"
+    end
+
+    end
+    #module_function :test2
+end
+
+Trig.test1
+Trig.test2
