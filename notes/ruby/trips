@@ -1,0 +1,3 @@
+Peatio::Application.ancestors
+Rails::Railtie.singleton_methods(false).grep /config/
+Rails::Railtie.method(:config).source_location

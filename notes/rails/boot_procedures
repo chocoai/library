@@ -1,0 +1,98 @@
+思路：首先，设置环境变量（$:），将gem包的路径包含进去；然后，加载gem包的头文件（比如rails，就加载rails.rb）
+Take 'bin/rails server -p 3000' as an example. First of all, start from bin/rails
+0. APP_PATH
+1. 通过Gemfile和Gemfile.lock来加载所有gem的lib库路径到$LOAD_PATH *******************
+   require_relative '../config/boot.rb'
+       require 'bundler/setup' -- already in $LOAD_PATH
+           Bundler.setup -- bundler.rb
+               Bundler::Runtime.new(root, definition).setup
+                   $LOAD_PATH.insert(insert_index, *load_paths)
+2. require 'rails/commands'
+       Rails::CommandsTasks.new(ARGV).run_command!(command)
+           require_command!("server") -- require 'rails/commands/server'
+           require APP_PATH -- 加载config/application.rb，私有配置
+           #################################################################
+           server.start -- Rails::Server.new.start => Rack::Server.new.start
+
+2.1 需要详细说明config.application.rb的require加载内容
+    2.1.1 config/boot.rb
+    2.1.2 %w( active_record action_controller action_view sprockets ).each { |framework| require "#{framework}/railtie" }
+    2.1.3 Bundler.require(*Rails.groups)
+          2.1.3.1 Rails.groups -- rails.rb
+                  def env
+                      @_env ||= ActiveSupport::StringInquirer.new(ENV["RAILS_ENV"] || ENV["RACK_ENV"] || "development")
+                  end
+
+                  def groups(*groups)
+                    hash = groups.extract_options!
+                    env = Rails.env
+                    groups.unshift(:default, env)
+                    groups.concat ENV["RAILS_GROUPS"].to_s.split(",")
+                    groups.concat hash.map { |k, v| k if v.map(&:to_s).include?(env) }
+                    groups.compact!
+                    groups.uniq!
+                    groups
+                  end
+
+          2.1.3.2 Bundler.require -- [:default, "development"] 加载require了所有gem的初始文件 ****************
+                  Bundler::Runtime.new.require -- bundler/runtime.rb
+
+                  # Loop through all the specified autorequires for the
+                  # dependency. If there are none, use the dependency's name
+                  # as the autorequire.
+                  Array(dep.autorequire || dep.name).each do |file|
+                    # Allow `require: true` as an alias for `require: <name>`
+                    file = dep.name if file == true
+                    required_file = file
+                    begin
+                      Kernel.require file
+                    rescue => e
+                      raise e if e.is_a?(LoadError) # we handle this a little later
+                      raise Bundler::GemRequireError.new e,
+                        "There was an error while trying to load the gem '#{file}'."
+                    end
+                  end
+
+    2.1.4 require_relative "plugins"
+
+2.2 中间过程中不同gem的里面继承自Rails::Railtie的类如果使用config.*，则会创建一个application instance，具体如下：
+class << self
+    delegate :config, to: :instance
+
+    def instance
+      @instance ||= new
+    end
+end
+
+def config
+  @config ||= Railtie::Configuration.new
+end
+
+但是对于Peatio::Application来说，继承自Rails::Application，会调用inherited方法，在这个方法里面进行的上述过程（还未进行配置）
+def inherited(base)
+  super
+  Rails.app_class = base
+  add_lib_to_load_path!(find_root(base.called_from))
+  ActiveSupport.run_load_hooks(:before_configuration, base)
+end
+
+2.3 server.start -- RailsRails::Server.new.start => Rack::Server.new.start => puma.rb
+
+附录1 - Peatio::Application本身加载总结
+(1) Peatio::Application << Rails::Application
+def inherited(base)
+  super
+  Rails.app_class = base
+  add_lib_to_load_path!(find_root(base.called_from)) ############# 加载./lib到$LOAD_PATH
+  ActiveSupport.run_load_hooks(:before_configuration, base)
+end
+【中间过程需要进一步深入研究】
+
+(2) Call Flow
+Rails::Application: initialize
+       Rails::Engine: initialize
+              Rails::Railtie: initialize
+
+Rails::Application::Configuration: initialize
+       Rails::Engine::Configuration: initialize
+              Rails::Railtie::Configuration: initialize
