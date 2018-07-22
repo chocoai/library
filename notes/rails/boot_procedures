@@ -73,10 +73,91 @@ def inherited(base)
   super
   Rails.app_class = base
   add_lib_to_load_path!(find_root(base.called_from))
-  ActiveSupport.run_load_hooks(:before_configuration, base)
+  ActiveSupport.run_load_hooks(:before_configuration, base) ######Figaro config/application.yml##########
 end
 
+2.2.1 Figaro负责将config/application.yml里面的配置加载为环境变量
+需要说明的是在2.1.3里面Bundler.require(*Rails.groups)里面require 'figaro.rb'的时候注册的
+module Figaro
+  module Rails
+    class Railtie < ::Rails::Railtie
+      config.before_configuration do
+        Figaro.load
+      end
+    end
+  end
+end
+
+
+Firago里面有一个关于Hash的高级用法记录一下
+    def raw_configuration
+      (@parsed ||= Hash.new { |hash, path| hash[path] = parse(path) })[path]
+    end
+
 2.3 server.start -- RailsRails::Server.new.start => Rack::Server.new.start => puma.rb
+    def start
+      print_boot_information
+      trap(:INT) { exit }
+      create_tmp_directories
+      log_to_stdout if options[:log_stdout] #########此处启动的Peatio::Application应用########
+
+      super
+    ensure
+      # The '-h' option calls exit before @options is set.
+      # If we call 'options' with it unset, we get double help banners.
+      puts 'Exiting' unless @options && options[:daemonize]
+    end
+
+    def log_to_stdout
+      wrapped_app # touch the app so the logger is set up ###########################
+
+      console = ActiveSupport::Logger.new(STDOUT)
+      console.formatter = Rails.logger.formatter
+      console.level = Rails.logger.level
+
+      unless ActiveSupport::Logger.logger_outputs_to?(Rails.logger, STDOUT)
+        Rails.logger.extend(ActiveSupport::Logger.broadcast(console))
+      end
+    end
+
+    def wrapped_app
+      @wrapped_app ||= build_app app
+    end
+
+    def app
+      @app ||= options[:builder] ? build_app_from_string : build_app_and_options_from_config
+    end
+
+    def build_app_and_options_from_config
+      if !::File.exist? options[:config]
+        abort "configuration #{options[:config]} not found"
+      end
+
+      app, options = Rack::Builder.parse_file(self.options[:config], opt_parser) ########################
+      self.options.merge! options
+      app
+    end
+
+<config/config.ru>
+require ::File.expand_path('../config/environment',  __FILE__)
+run Peatio::Application
+
+<config/environment.rb>
+# Load the Rails application.
+require File.expand_path('../application', __FILE__)
+
+# Initialize the Rails application.
+Rails.application.initialize!
+
+    def initialize!(group=:default) #:nodoc:
+      raise "Application has been already initialized." if @initialized
+      run_initializers(group, self)
+      @initialized = true
+      self
+    end
+
+小结：bin/rails -> config/boot.rb -> rails/commands.rb (config/application.rb -> config/config.ru -> config/environment.rb  -> Rails.application.initialize! - 加载add过的path)
+<<<<<<<<<<<关注rails/engine.rb里面的initializer所有的调用>>>>>>>>>>>>
 
 附录1 - Peatio::Application本身加载总结
 (1) Peatio::Application << Rails::Application
