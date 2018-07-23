@@ -8,3 +8,8 @@ Rails.env.production?
 
 rails server --environment production
 bundle exec rake db:migrate RAILS_ENV=production
+
+bin/rails generate controller Welcome index
+bin/rails generate controller Articles
+
+bin/rails generate model Article title:string text:text

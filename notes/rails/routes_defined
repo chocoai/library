@@ -1,0 +1,60 @@
+自定义资源路由
+1. 指定控制器
+resources :photos, controller: 'images'
+resources :user_permissions, controller: 'admin/user_permissions'
+
+2. 指定约束
+resources :photos, constraints: { id: /[A-Z][A-Z][0-9]+/ }
+
+constraints(id: /[A-Z][A-Z][0-9]+/) do
+  resources :photos
+  resources :accounts
+end
+
+3. 覆盖具名路由辅助方法
+resources :photos, as: 'images'
+
+4. 覆盖 new 和 edit 片段
+resources :photos, path_names: { new: 'make', edit: 'change' }
+=>
+/photos/make
+/photos/1/change
+
+scope path_names: { new: 'make' } do
+  # 其余路由
+end
+
+5. 为具名路由辅助方法添加前缀
+scope 'admin' do
+  resources :photos, as: 'admin_photos'
+end
+上述路由声明会生成 admin_photos_path、new_admin_photo_path 等辅助方法，其返回值分别为 /admin/photos，/admin/photos/new
+
+:module, :path, :as三者对比
+(1) :module => controller的路径前缀（/controllers/admin/*）
+(2) :path => url的路径前缀（/admin/*）
+(3) :as => 具名路由辅助方法（admin_photos_path）
+
+6. 限制所创建的路由
+resources :photos, only: [:index, :show]
+resources :photos, except: :destroy
+
+7. 本地化路径
+scope(path_names: { new: 'neu', edit: 'bearbeiten' }) do
+  resources :categories, path: 'kategorien'
+end
+
+8. 在嵌套资源中使用 :as 选项
+resources :magazines do
+  resources :ads, as: 'periodical_ads'
+end	
+
+9. 覆盖具名路由的参数
+resources :videos, param: :identifier
+
+videos GET  /videos(.:format)                  videos#index
+       POST /videos(.:format)                  videos#create
+new_videos GET  /videos/new(.:format)              videos#new
+edit_videos GET  /videos/:identifier/edit(.:format) videos#edit
+
+Video.find_by(identifier: params[:identifier])

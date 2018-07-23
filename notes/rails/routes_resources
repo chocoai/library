@@ -1,3 +1,6 @@
+I. 前言
+
+II. 规则
 1. index, show, new, edit, create, update, destroy
 2. GET, POST, PUT, PATCH, DELETE
 3. resource routing
@@ -77,7 +80,8 @@ GET         /ammin/photos/:id/edit    photos#edit      return an HTML form for e
 PATCH/PUT   /ammin/photos/:id         photos#update    update a specific photo
 DELETE      /ammin/photos/:id         photos#destroy   delete a specific photo
 
-9. get '/foo' => '/foo#index'
+9. 如果想在命名空间代码块中使用另一个控制器命名空间，可以指定控制器的绝对路径
+get '/foo' => '/foo#index'
 
 10. nested resources - Resources should never be nested more than 1 level deep.
 class Magzine < ApplicationRecord
@@ -101,6 +105,7 @@ PATCH/PUT 	/magazines/:magazine_id/ads/:id 	    ads#update    	update a specific
 DELETE 	    /magazines/:magazine_id/ads/:id 	    ads#destroy 	delete a specific ad belonging to a specific magazine
 
 helpers: magzine_ads_url, edit_magzine_ad_path, etc
+嵌套资源的层级不应超过 1 层
 
 11. routing concerns
 concern :commentable do
@@ -177,3 +182,40 @@ magzine_ad_path
 <%= link_to 'Magazine details', @magazine %>
 <%= link_to 'Edit Ad', [:edit, @magazine, @ad] %>
 
+
+14. 从对象创建路径和URL地址
+除了使用路由辅助方法，Rails 还可以从参数数组创建路径和 URL 地址。例如，假设有下面的路由：
+resources :magazines do
+  resources :ads
+end
+
+在使用 magazine_ad_path 方法时，我们可以传入 Magazine 和 Ad 的实例，而不是数字 ID：
+<%= link_to 'Ad details', magazine_ad_path(@magazine, @ad) %>
+
+我们还可以在使用 url_for 方法时传入一组对象，Rails 会自动确定对应的路由：
+<%= link_to 'Ad details', url_for([@magazine, @ad]) %>
+
+在这种情况下，Rails 知道 @magazine 是 Magazine 的实例，而 @ad 是 Ad 的实例，因此会使用 magazine_ad_path 辅助方法。在使用 link_to 等辅助方法时，我们可以只指定对象，而不必完整调用 url_for 方法：
+<%= link_to 'Ad details', [@magazine, @ad] %>
+
+如果想链接到一本杂志，可以直接指定 Magazine 的实例：
+<%= link_to 'Magazine details', @magazine %>
+
+如果想链接到其他控制器动作，只需把动作名称作为第一个元素插入对象数组即可：
+<%= link_to 'Edit Ad', [:edit, @magazine, @ad] %>
+
+15. 列出所有的routes
+http://peatio.local/rails/info/routes
+rails routes -c/-g
+
+16. 测试路由
+(1) assert_generates
+assert_generates '/photos/1', { controller: 'photos', action: 'show', id: '1' }
+assert_generates '/about', controller: 'pages', action: 'about'
+
+(2) assert_recognizes
+assert_recognizes({ controller: 'photos', action: 'show', id: '1' }, '/photos/1')
+assert_recognizes（{controller：'photos'，action：'create'}，{path：'photos'，method：：post}）
+
+(3) assert_routing
+assert_routing({ path: 'photos', method: :post }, { controller: 'photos', action: 'create' })

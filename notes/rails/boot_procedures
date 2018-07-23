@@ -1,4 +1,7 @@
-思路：首先，设置环境变量（$:），将gem包的路径包含进去；然后，加载gem包的头文件（比如rails，就加载rails.rb）
+思路：首先，设置环境变量（$:），将gem包的路径包含进去；然后，加载gem包的头文件（比如rails，就加载rails.rb）；
+接着，在创建Peatio::Application的时候，通过inherited钩子函数执行before_configuration
+hook，主要就是把application.yml等文件变成环境变量；再接着，就是各种initializer的执行（bootstrap,
+railtie, finisher）；最后，启动server
 Take 'bin/rails server -p 3000' as an example. First of all, start from bin/rails
 0. APP_PATH
 1. 通过Gemfile和Gemfile.lock来加载所有gem的lib库路径到$LOAD_PATH *******************

@@ -108,19 +108,31 @@ c. 支付确认
 
 2. JWT认证优化
 
-############ 20180709-20180715 ##########
+############ 20180716-20180722 ##########
+工作部分
+I. golang开发
+1. 手机API接口开发
+(1) 授权接口优化: a. token唯一性 b. API授权查询接口
+
+2. 修改oauth_access_grants表更新问题
+解决方法：去掉了token index
+
+II. peatio
+1. rails initialization process
+2. rails configuration details
+
+############ 20180723-20180729 ##########
 工作部分
 I. golang开发
 1. 手机API接口开发
 (1) won服务器主动通知游戏服务器
 (2) won服务器与游戏服务器之间认证
 (3) peatio与golang之间ip认证
-(4) 授权接口优化: a. token唯一性 b. API授权查询接口 ###
-(5) 支付接口start_to_pay: a. 订单大超时 b. 异常操作
-(6) 获取充值支付方式列表
-(7) 账户买入汇率查询
-(8) 混合支付确认
-(9) PIN码支付 ##############
+(4) 支付接口start_to_pay: a. 订单大超时 b. 异常操作
+(5) 获取充值支付方式列表
+(6) 账户买入汇率查询
+(7) 混合支付确认
+(8) PIN码支付 ###
 重置方案：刷脸、手机验证码+身份证、手机验证码+银行卡、手机验证码+个人问题
 最终方案：发短信验证码 + 姓名+生日
 
@@ -132,19 +144,16 @@ I. golang开发
 
 3. beego automated api document
 
-4. 修改oauth_access_grants表更新问题 ###
-解决方法：去掉了token index
+4. peatio提现地址管理 ###
 
-5. peatio提现地址管理 ###
+5. 请求won链设置KYC等级
 
-6. 请求won链设置KYC等级
-
-7. 多语言
+6. 多语言：peatio-trading-ui, golang文案 ###
 
 II. Peatio开发
 1. jwt token - verification (use public token)
-2. API总体任务和目前状态 ###
-3. API对接 ###
+2. API总体任务和目前状态
+3. API对接
 
 学习部分
 1. Won链学习

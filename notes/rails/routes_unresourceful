@@ -1,0 +1,55 @@
+1. 绑定参数
+get 'photos(/:id)', to: :display
+
+2. 动态片段 dynamic segment
+get 'photos/:id/:user_id', to: 'photos#show'
+
+3. 静态片段 static segment
+get 'photos/:id/with_user/:user_id', to: 'photos#show'
+params 的值为 { controller: 'photos', action: 'show', id: '1', user_id: '2' }
+
+4. 查询字符串
+get 'photos/:id', to: 'photos#show'
+/photos/1?user_id=2 路径会被映射到 Photos 控制器的 show 动作上，此时，params 的值是 { controller: 'photos', action: 'show', id: '1', user_id: '2' }
+
+5. 定义默认值
+get 'photos/:id', to: 'photos#show', defaults: { format: 'jpg' }
+defaults format: :json do
+  resources :photos
+end
+
+6. 为路由命名
+get 'exit', to: 'sessions#destroy', as: :logout
+这个路由声明会创建 logout_path 和 logout_url 具名辅助方法
+其中，logout_path 辅助方法的返回值是 /exit
+
+7. HTTP 方法约束
+match 'photos', to: 'photos#show', via: [:get, :post]
+match 'photos', to: 'photos#show', via: :all
+
+8. 片段约束
+get 'photos/:id', to: 'photos#show', constraints: { id: /[A-Z]\d{5}/ }
+get 'photos/:id', to: 'photos#show', id: /[A-Z]\d{5}/
+
+/1-hello-world
+get '/:id', to: 'articles#show', constraints: { id: /\d.+/ }
+/david
+get '/:username', to: 'users#show'
+
+9. 路由通配符和通配符片段
+get 'photos/*other', to: 'photos#unknown'
+这个路由会匹配 photos/12 和 /photos/long/path/to/12 路径，并把 params[:other] 分别设置为 "12" 和 "long/path/to/12"。像 *other 这样以星号开头的片段，称作“通配符片段”。
+
+get 'books/*section/:title', to: 'books#show'
+这个路由会匹配 books/some/section/last-words-a-memoir 路径，此时，params[:section] 的值是 'some/section'，params[:title] 的值是 'last-words-a-memoir'。
+
+get '*a/foo/*b', to: 'test#index'
+会匹配 zoo/woo/foo/bar/baz 路径，此时，params[:a] 的值是 'zoo/woo'，params[:b] 的值是 'bar/baz'。
+
+10. 使用 root 方法
+root to: 'pages#main'
+root 'pages#main' # 上一行代码的简易写法
+
+(1) root 路由应该放在路由文件的顶部，因为最常用的路由应该首先匹配
+(2) root 路由只处理 GET 请求
+
