@@ -204,11 +204,46 @@ end
 如果想链接到其他控制器动作，只需把动作名称作为第一个元素插入对象数组即可：
 <%= link_to 'Edit Ad', [:edit, @magazine, @ad] %>
 
-15. 列出所有的routes
+15. 添加更多REST式动作
+我们可以使用的路由，并不仅限于 REST 式路由默认创建的那 7 个。我们可以根据需要添加其他路由，包括集合路由（collection route）和成员路由（member route）
+(1) 添加成员路由
+resources :photos do
+  member do
+    get 'preview'
+  end
+end
+Rails 路由能够识别 /photos/1/preview 路径上的 GET 请求，并把请求映射到 Photos 控制器的 preview 动作上，同时把资源 ID 传入 params[:id]，并创建 preview_photo_url 和 preview_photo_path 辅助方法
+
+如果有一个成员路由的情况，就可以简写
+resources :photos do
+  get 'preview', on: :member
+end
+如果不使用 :on 选项，创建的成员路由也是相同的，但资源 ID 就必须通过 params[:photo_id] 而不是 params[:id] 来获取了。
+
+(2) 添加集合路由
+resources :photos do
+  collection do
+    get 'search'
+  end
+end
+Rails 路由能够识别 /photos/search 路径上的 GET 请求，并把请求映射到 Photos 控制器的 search 动作上，同时创建 search_photos_url 和 search_photos_path 辅助方法
+
+resources :photos do
+  get 'search', on: :collection
+end
+
+(3) 为附加的 new 动作添加路由
+可以通过 :on 选项，为附加的 new 动作添加路由
+resources :comments do
+  get 'preview', on: :new
+end
+Rails 路由能够识别 /comments/new/preview 路径上的 GET 请求，并把请求映射到 Comments 控制器的 preview 动作上，同时创建 preview_new_comment_url 和 preview_new_comment_path 辅助方法
+
+16. 列出所有的routes
 http://peatio.local/rails/info/routes
 rails routes -c/-g
 
-16. 测试路由
+17. 测试路由
 (1) assert_generates
 assert_generates '/photos/1', { controller: 'photos', action: 'show', id: '1' }
 assert_generates '/about', controller: 'pages', action: 'about'

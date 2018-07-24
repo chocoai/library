@@ -1,0 +1,99 @@
+1. 命名约定
+(1) 控制器
+Rails 控制器的命名约定是，最后一个单词使用复数形式，但也有例外，比如 ApplicationController
+遵守这一约定便可享用默认的路由生成器（例如 resources 等），无需再指定 :path 或 :controller 选项，而且 URL 和路径的辅助方法也能保持一致性
+
+(2) 模型
+控制器的命名约定与模型不同，模型的名字习惯使用单数形式。
+
+2. 参数
+在 Web 应用中参数分为两类。第一类随 URL 发送，叫做“查询字符串参数”，即 URL 中 ? 符号后面的部分。第二类经常称为“POST 数据”，一般来自用户填写的表单。
+Rails 不区分这两种参数，在控制器中都可通过 params 散列获取
+(1) 散列和数组参数
+GET /clients?ids[]=1&ids[]=2&ids[]=3
+params[:ids] 的值是 ["1", "2", "3"]
+(2) 路由参数
+params 散列始终有 :controller 和 :action 两个键
+
+get '/clients/:status' => 'clients#index', foo: 'bar'
+用户访问 /clients/active 时，params[:status] 的值是 "active"。同时，params[:foo] 的值会被设为 "bar"，就像通过查询字符串传入的一样。控制器还会收到 params[:action]，其值为 "index"，以及 params[:controller]，其值为 "clients"
+
+3. 健壮参数
+Action Controller 的参数禁止在 Avtive Model 中批量赋值，除非参数在白名单中。也就是说，你要明确选择哪些属性可以批量更新，以防不小心允许用户更新模型中敏感的属性
+(1) 允许使用的标量值
+params.permit(:id)
+若 params 中有 :id 键，且 :id 是标量值，就可以通过白名单检查；否则 :id 会被过滤掉。因此，不能传入数组、散列或其他对象
+
+允许使用的标量类型有：String、Symbol、NilClass、Numeric、TrueClass、FalseClass、Date、Time、DateTime、StringIO、IO、ActionDispatch::Http::UploadedFile 和 Rack::Test::UploadedFile
+
+params.permit(id: [])
+params.permit(preferences: {})
+params.require(:log_entry).permit!
+
+(2) 嵌套参数
+params.permit(:name, { emails: [] },
+              friends: [ :name,
+                         { family: [ :name ], hobbies: [] }])
+
+4. 过滤器
+(1) 过滤器（filter）是一种方法，在控制器动作运行之前、之后，或者前后运行
+一般情况下，过滤器的使用方法是定义私有方法
+
+class ApplicationController < ActionController::Base
+  before_action :require_login
+ 
+  private
+ 
+  def require_login
+    unless logged_in?
+      flash[:error] = "You must be logged in to access this section"
+      redirect_to new_login_url # halts request cycle
+    end
+  end
+end
+
+过滤器在 ApplicationController 中定义，所以应用中的所有控制器都会继承。此时，应用中的所有页面都要求用户登录后才能访问。很显然（这样用户根本无法登录），并不是所有控制器或动作都要做这种限制。如果想跳过某个动作，可以使用 skip_before_action:
+class LoginsController < ApplicationController
+  skip_before_action :require_login, only: [:new, :create]
+end
+
+(2) 后置过滤器和环绕过滤器
+后置过滤器类似于前置过滤器，不过因为动作已经运行了，所以可以获取即将发送给客户端的响应数据。显然，后置过滤器无法阻止运行动作。
+
+(3) 类中定义过滤器 
+class ApplicationController < ActionController::Base
+  before_action LoginFilter
+end
+ 
+class LoginFilter
+  def self.before(controller)
+    unless controller.send(:logged_in?)
+      controller.flash[:error] = "You must be logged in to access this section"
+      controller.redirect_to controller.new_login_url
+    end
+  end
+end
+
+(4) 直接在 *_action 方法中使用代码块
+class ApplicationController < ActionController::Base
+  before_action do |controller|
+    unless controller.send(:logged_in?)
+      flash[:error] = "You must be logged in to access this section"
+      redirect_to new_login_url
+    end
+  end
+end
+
+5. 渲染 XML 和 JSON 数据
+class UsersController < ApplicationController
+  def index
+    @users = User.all
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render xml: @users}
+      format.json { render json: @users}
+    end
+  end
+end
+
+
