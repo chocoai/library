@@ -1,0 +1,85 @@
+1.创建响应
+(1) 调用 render 方法，向浏览器发送一个完整的响应；
+(2) 调用 redirect_to 方法，向浏览器发送一个 HTTP 重定向状态码；
+(3) 调用 head 方法，向浏览器发送只含 HTTP 首部的响应；
+
+2. 默认的渲染行为
+Rails开发原则之一是“多约定，少配置”
+class BooksController < ApplicationController
+end
+
+resources :books
+
+app/views/books/index.html.erb
+<h1>Books are coming soon!</h1>
+
+3. 使用 render 方法
+如果想渲染同个控制器中的其他模板，可以把视图的名字传给 render 方法：
+def update
+  @book = Book.find(params[:id])
+  if @book.update(book_params)
+    redirect_to(@book)
+  else
+    render "edit"
+  end
+end
+
+如果不想用字符串，还可使用符号指定要渲染的动作：
+def update
+  @book = Book.find(params[:id])
+  if @book.update(book_params)
+    redirect_to(@book)
+  else
+    render :edit
+  end
+end
+
+渲染其他控制器中某个动作的模板
+render "products/show"
+render template: "products/show"
+
+渲染任意文件
+render file: "/u/apps/warehouse_app/current/app/views/products/show"
+
+
+render :edit
+render action: :edit
+render "edit"
+render "edit.html.erb"
+render action: "edit"
+render action: "edit.html.erb"
+render "books/edit"
+render "books/edit.html.erb"
+render template: "books/edit"
+render template: "books/edit.html.erb"
+render "/path/to/rails/app/views/books/edit"
+render "/path/to/rails/app/views/books/edit.html.erb"
+render file: "/path/to/rails/app/views/books/edit"
+render file: "/path/to/rails/app/views/books/edit.html.erb"
+
+使用 render 方法的 :inline 选项
+render inline: "<% products.each do |p| %><p><%= p.name %></p><% end %>"
+
+渲染文本
+render
+
+渲染 HTML
+render html: "<strong>Not Found</strong>".html_safe
+
+渲染 JSON
+render json: @product
+
+渲染 XML
+render xml: @product
+
+渲染普通的 JavaScript
+render js: "alert('Hello Rails');"
+
+render 方法的选项
+:content_type
+:layout
+:location
+:status
+:formats
+
+TODO

@@ -132,7 +132,7 @@ I. golang开发
 (5) 获取充值支付方式列表
 (6) 账户买入汇率查询
 (7) 混合支付确认
-(8) PIN码支付 ###
+(8) PIN码支付
 重置方案：刷脸、手机验证码+身份证、手机验证码+银行卡、手机验证码+个人问题
 最终方案：发短信验证码 + 姓名+生日
 
@@ -144,11 +144,19 @@ I. golang开发
 
 3. beego automated api document
 
-4. peatio提现地址管理 ###
+4. peatio地址管理
+(1) 提现地址管理代码查看
+(2) 充值地址管理修改
 
 5. 请求won链设置KYC等级
 
 6. 多语言：peatio-trading-ui, golang文案 ###
+
+7. payments表合并到bills表
+
+8. 验签
+(1) 确认支付
+(2) 通用验签
 
 II. Peatio开发
 1. jwt token - verification (use public token)
@@ -164,6 +172,7 @@ II. Peatio开发
 通过MetaMask 使用wonchain
 
 会议纪要
+1. jira + confluence
 
 TODO List
 1. 支付宝的找回密码流程
