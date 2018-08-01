@@ -125,18 +125,26 @@ II. peatio
 工作部分
 I. golang开发
 1. 手机API接口开发
-(1) won服务器主动通知游戏服务器
-(2) won服务器与游戏服务器之间认证
-(3) peatio与golang之间ip认证
-(4) 支付接口start_to_pay: a. 订单大超时 b. 异常操作
-(5) 获取充值支付方式列表
-(6) 账户买入汇率查询
-(7) 混合支付确认
-(8) PIN码支付
+(1) peatio与golang之间ip认证
+(2) PIN码支付
 重置方案：刷脸、手机验证码+身份证、手机验证码+银行卡、手机验证码+个人问题
 最终方案：发短信验证码 + 姓名+生日
 
-2. peatio功能分解
+TODO List
+1. 支付宝的找回密码流程（已解决）
+
+############ 20180723-20180729 ##########
+工作部分
+I. golang开发
+1. 手机API接口开发
+(1) won服务器主动通知游戏服务器
+(2) won服务器与游戏服务器之间认证
+(3) 支付接口start_to_pay: a. 订单大超时 b. 异常操作
+(4) 获取充值支付方式列表
+(5) 账户买入汇率查询
+(6) 混合支付确认
+
+2. peatio功能分解 #
 (1) tasks
 (2) nodejs充值脚本
 (3) daemon
@@ -144,43 +152,35 @@ I. golang开发
 
 3. beego automated api document
 
-4. peatio地址管理
+4. peatio地址管理 #
 (1) 提现地址管理代码查看
 (2) 充值地址管理修改
 
 5. 请求won链设置KYC等级
 
-6. 多语言：peatio-trading-ui, golang文案 ###
+6. 多语言：peatio-trading-ui, golang文案
 
-7. payments表合并到bills表
-
-8. 验签
+7. 验签
 (1) 确认支付
 (2) 通用验签
 
 II. Peatio开发
-1. jwt token - verification (use public token)
-2. API总体任务和目前状态
-3. API对接
+1. jwt token - verification (use public token) #
+2. payments表合并到bills表
 
 学习部分
 1. Won链学习
 2. Google公司文化
 3. web socket实现代码
-4. 指纹支付安全问题
-5. https://docs.google.com/document/d/14rGH34mBS5dwNOw934xYyZXdpTLiUch4tA7w8jozpZI/edit
+4. https://docs.google.com/document/d/14rGH34mBS5dwNOw934xYyZXdpTLiUch4tA7w8jozpZI/edit
 通过MetaMask 使用wonchain
+5. rails views and layouts knowledge #
 
 会议纪要
-1. jira + confluence
 
 TODO List
-1. 支付宝的找回密码流程
-2. won钱包充值和提款
-3. KYC认证添加won链钱包地址，调用won链接口
-4. 服务器之间的调用
-微信的服务器与服务器的通信是,帮商户生成:商户证书.p12, 然后在游戏的服务器端用这个生成相应的证书pem格式，与证书密钥pem格式，然后就可以验证了。
-5. 支付的时候，如果用户还没登录，需要加入登录的流程，如果还没验证KYC l1,需要加入L1资料填入流程。
-6. PIN的完整逻辑(初始设置,之后修改PIN,支付使用PIN）
-7. 主动通知游戏服务器支付成功的消息
-8. 自己可以给自己转账
+1. won钱包充值和提款
+2. KYC认证添加won链钱包地址，调用won链接口
+3. 支付的时候，如果用户还没登录，需要加入登录的流程，如果还没验证KYC l1,需要加入L1资料填入流程。
+4. 主动通知游戏服务器支付成功的消息
+5. 自己可以给自己转账
