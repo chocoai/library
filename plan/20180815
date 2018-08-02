@@ -1,0 +1,40 @@
+服务器方面：
+rabbitmq安全问题
+http://a2.1won.com:15672/#/
+suername: guest
+password: geust
+
+mysql index检查
+
+won链方面:
+线上won币充值、提现测试（之前跑通过）
+线上tpc充值、提现测试（之前没跑通过）
+btc充值、提现测试（这个怎么测试）
+kyc验证本地测试通过，线上tpc地址验证有点问题
+
+
+交易网站方面:
+pincode设置、忘记、找回api接口对接（api接口已经好了）
+Api接口验证：rsa加密
+价格体系开发：加密币价格走势、交易市场图价格走势、交易流程测试，api接口更新
+限额体系开发：账户限额根据用户成交量计算限额余额
+payments合并到bills表里面、测试
+充值、提现记录到bills表里面
+rabbitmq
+消息处理发生异常，就不停的消费消息，导致很多错误日志；消息在queue里面一直停留着
+一些bugfix
+buy/sell 功能 （15号前可能做不完）
+order管理功能（挂单、取消挂单功能,15号前可能做不完)
+邀请、分享功能（15号前可能做不完）
+pusher的websocket
+
+
+Android、iOS方面：
+Buy/Sell
+充值、提现测试
+账单流水(buy/sell/充值/提现/游戏支付)
+kyc验证
+pincode、指纹支付，App解锁
+交易市场价格走势图（交易变化量需要根据用户点击走势图进行计算，点击功能开发）
+order管理功能（挂单、取消挂单，api接口有了).
+邀请、分享功能

@@ -35,6 +35,27 @@ articles_controller.rb 控制器文件中的 index 动作对应 app/views/articl
 <%= render partial: "product", object: @item, as: "item" %>
 <%= render partial: "product", locals: { item: @item } %>
 
+如果要在局部视图中渲染模型实例，可以使用简写句法：
+<%= render @customer %>
+
+####################################
+local_assigns功能
+index.html.erb
+<%= render user.articles %>
+
+show.html.erb
+<%= render article, full: true %>
+
+_articles.html.erb 
+<h2><%= article.title %></h2>
+ 
+<% if local_assigns[:full] %>
+  <%= simple_format article.body %>
+<% else %>
+  <%= truncate article.body %>
+<% end %>
+####################################
+
 2.2.3 渲染集合
 <% @products.each do |product| %>
   <%= render partial: "product", locals: { product: product } %>
@@ -42,14 +63,37 @@ articles_controller.rb 控制器文件中的 index 动作对应 app/views/articl
 <%= render partial: "product", collection: @products %>
 <%= render @products %>
 
+<%= render partial: "product", collection: @products, layout: "special_layout" %>
+
 2.2.4 间隔模板
 <%= render partial: @products, spacer_template: "product_ruler" %>
 会在两个 _product 局部视图（主局部视图）之间渲染 _product_ruler 局部视图（间隔模板）。
 
+2.2.5 Rails 根据集合中各元素的模型名决定使用哪个局部视图
+index.html.erb
+<h1>Contacts</h1>
+<%= render [customer1, employee1, customer2, employee2] %>
+
+customers/_customer.html.erb
+<p>Customer: <%= customer.name %></p>
+
+employees/_employee.html.erb
+<p>Employee: <%= employee.name %></p>
+
+
+如果集合为空，render 方法返回 nil，所以最好提供替代内容。
+<h1>Products</h1>
+<%= render(@products) || "There are no products available." %>
+
+2.2.6 locals特殊说明
+<%= render partial: "product", collection: @products,
+           as: :item, locals: {title: "Products Page"} %>
+
 3. 布局
 3.1 布局是渲染 Rails 控制器返回结果时使用的公共视图模板
 
-3.2 应用于局部视图的布局称为局部布局
+3.2 应用于局部视图的布局称为局部布局；注意，局部布局的名称也以下划线开头，而且与局部视图保存在同一个文件夹中（不在 layouts 文件夹中）。
+还要注意，指定其他选项时，例如 :layout，必须明确地使用 :partial 选项
 <%= render partial: 'article', layout: 'box', locals: { article: @article } %>
 
 articles/_box.html.erb
@@ -67,3 +111,24 @@ articles/_box.html.erb
 4. 视图路径
 在渲染响应时，控制器需要解析不同视图所在的位置。默认情况下，控制器只查找 app/views 文件夹。
 我们可以使用 prepend_view_path 和 append_view_path 方法分别在查找路径的开头和结尾添加其他位置
+
+附录
+A. 模板继承
+# in app/controllers/application_controller
+class ApplicationController < ActionController::Base
+end
+ 
+# in app/controllers/admin_controller
+class AdminController < ApplicationController
+end
+ 
+# in app/controllers/admin/products_controller
+class Admin::ProductsController < AdminController
+  def index
+  end
+end
+
+admin/products#index 动作的查找顺序为：
+app/views/admin/products/
+app/views/admin/
+app/views/application/

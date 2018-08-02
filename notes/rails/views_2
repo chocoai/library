@@ -14,6 +14,8 @@ app/views/books/index.html.erb
 <h1>Books are coming soon!</h1>
 
 3. 使用 render 方法
+<<<<<<render 告诉 Rails 构建响应时使用哪个视图（或其他静态资源）>>>>>>
+
 如果想渲染同个控制器中的其他模板，可以把视图的名字传给 render 方法：
 def update
   @book = Book.find(params[:id])
@@ -61,9 +63,9 @@ render file: "/path/to/rails/app/views/books/edit.html.erb"
 render inline: "<% products.each do |p| %><p><%= p.name %></p><% end %>"
 
 渲染文本
-render
+render plain: "OK"
 
-渲染 HTML
+渲染HTML
 render html: "<strong>Not Found</strong>".html_safe
 
 渲染 JSON
@@ -76,10 +78,179 @@ render xml: @product
 render js: "alert('Hello Rails');"
 
 render 方法的选项
-:content_type
-:layout
-:location
-:status
-:formats
+a) :content_type
+默认是text/html，也可以是其他，比如application/json
+b) :layout
+render layout: "special_layout"
+c) :location
+设置HTTP Location Header
+render xml: photo, location: photo_url(photo)
+d) :status
+render status: 500
+render status: :forbidden
+e) :formats
+render formats: :xml
+render formats: [:xml, :json]
 
-TODO
+4. 查找布局
+查找布局时，Rails 首先查看 app/views/layouts 文件夹中是否有和控制器同名的文件；
+如果没找到针对控制器的布局，Rails 会使用 app/views/layouts/application.html.erb；
+如果没有 .erb 布局，Rails 会使用 .builder 布局（如果文件存在）
+
+5. 指定单个控制器和动作使用的布局
+(1) 在控制器中使用 layout 声明，可以覆盖默认使用的布局约定
+class ProductsController < ApplicationController
+  layout "inventory"
+  #...
+end
+
+(2) 要想指定整个应用使用的布局，可以在 ApplicationController 类中使用 layout 声明：
+class ApplicationController < ActionController::Base
+  layout "main"
+  #...
+end
+
+(3) 可以使用一个符号把布局延后到处理请求时再选择：
+class ProductsController < ApplicationController
+  layout :products_layout
+ 
+  def show
+    @product = Product.find(params[:id])
+  end
+ 
+  private
+    def products_layout
+      @current_user.special? ? "special" : "products"
+    end
+ 
+end
+
+(4) 可使用行间方法，例如 Proc，决定使用哪个布局
+class ProductsController < ApplicationController
+  layout Proc.new { |controller| controller.request.xhr? ? "popup" : "application" }
+end
+
+(5) 根据条件设定布局 only/except
+class ProductsController < ApplicationController
+  layout "product", except: [:index, :rss]
+end
+
+(6) 布局继承
+application_controller.rb
+class ApplicationController < ActionController::Base
+  layout "main"
+end
+
+articles_controller.rb
+class ArticlesController < ApplicationController
+end
+
+special_articles_controller.rb
+class SpecialArticlesController < ArticlesController
+  layout "special"
+end
+
+old_articles_controller.rb
+class OldArticlesController < SpecialArticlesController
+  layout false
+ 
+  def show
+    @article = Article.find(params[:id])
+  end
+ 
+  def index
+    @old_articles = Article.older
+    render layout: "old"
+  end
+  # ...
+end
+
+说明：
+一般情况下，视图使用 main 布局渲染；
+ArticlesController#index 使用 main 布局；
+SpecialArticlesController#index 使用 special 布局；
+OldArticlesController#show 不用布局；
+OldArticlesController#index 使用 old 布局；
+
+(7) 模板继承
+# in app/controllers/application_controller
+class ApplicationController < ActionController::Base
+end
+ 
+# in app/controllers/admin_controller
+class AdminController < ApplicationController
+end
+ 
+# in app/controllers/admin/products_controller
+class Admin::ProductsController < AdminController
+  def index
+  end
+end
+
+admin/products#index 动作的查找顺序为：
+app/views/admin/products/
+app/views/admin/
+app/views/application/
+
+(8) 确保在一次代码运行路径中只调用一次 render 或 redirect_to 方法
+def show
+  @book = Book.find(params[:id])
+  if @book.special?
+    render action: "special_show" and return
+  end
+  render action: "regular_show"
+end
+
+5. redirect_to方法
+(1) 告诉浏览器向另一个 URL 发起新请求
+(2) redirect_to 和 redirect_back 不会立即导致方法返回，停止执行，它们只是设定 HTTP 响应。方法中位于其后的语句会继续执行。如果需要停止执行，使用 return 语句或其他终止机制。
+redirect_back(fallback_location: root_path)
+
+(3) 设置不同的重定向状态码
+redirect_to photos_path, status: 301
+
+(4) render 和 redirect_to 的区别
+举例说明：
+def index
+  @books = Book.all
+end
+ 
+def show
+  @book = Book.find_by(id: params[:id])
+  if @book.nil?
+    render action: "index"
+  end
+end
+
+如果 @book 变量的值为 nil，很可能会出问题。记住，render :action 不会执行目标动作中的任何代码，因此不会创建 index 视图所需的 @books 变量。修正方法之一是不渲染，而是重定向
+
+def index
+  @books = Book.all
+end
+ 
+def show
+  @book = Book.find_by(id: params[:id])
+  if @book.nil?
+    redirect_to action: :index
+  end
+end
+这种方法唯有一个缺点：增加了浏览器的工作量
+
+
+如果响应时间很重要，这个问题就值得关注了。下面举个虚拟的例子演示如何解决这个问题：
+def index
+  @books = Book.all
+end
+ 
+def show
+  @book = Book.find_by(id: params[:id])
+  if @book.nil?
+    @books = Book.all
+    flash.now[:alert] = "Your book was not found"
+    render "index"
+  end
+end
+
+6. 使用 head 构建只有首部的响应
+head :bad_request
+head :created, location: photo_path(@photo)
