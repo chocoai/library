@@ -1,0 +1,203 @@
+0. cascade false
+When mounted inside containers, such as Rails 3.x, errors such as "404 Not Found" or "406 Not Acceptable" will likely be handled and rendered by Rails handlers. For instance, accessing a nonexistent route "/api/foo" raises a 404, which inside rails will ultimately be translated to an ActionController::RoutingError, which most likely will get rendered to a HTML error page.
+
+Most APIs will enjoy preventing downstream handlers from handling errors. You may set the :cascade option to false for the entire API or separately on specific version definitions, which will remove the X-Cascade: true header from API responses.
+
+1. install
+gem install grape
+gem 'grape'
+
+2. modules
+class Twitter::API < Grape::API
+  mount Twitter::APIv1
+  mount Twitter::APIv2
+end
+
+class Twitter::API < Grape::API
+  mount Twitter::APIv1 => '/v1' # similar to using prefix inside the mounted API itself
+end
+
+Keep in mind such declarations as before/after/rescue_from must be placed before mount in a case where they should be inherited.
+class Twitter::API < Grape::API
+  before do
+    header 'X-Base-Header', 'will be defined for all APIs that are mounted below'
+  end
+
+  mount Twitter::Users
+  mount Twitter::Search
+end
+
+3. Versioning
+version 'v1', using: :path
+
+4. Describing Methods
+desc 'Returns your public timeline.' do
+  detail 'more details'
+  params  API::Entities::Status.documentation
+  success API::Entities::Entity
+  failure [[401, 'Unauthorized', 'Entities::Error']]
+  named 'My named route'
+  headers XAuthToken: {
+            description: 'Validates your identity',
+            required: true
+          },
+          XOptionalHeader: {
+            description: 'Not really needed',
+            required: false
+          }
+
+end
+get :public_timeline do
+  Status.limit(20)
+end
+
+detail: A more enhanced description
+params: Define parameters directly from an Entity
+success: (former entity) The Entity to be used to present by default this route
+failure: (former http_codes) A definition of the used failure HTTP Codes and Entities
+named: A helper to give a route a name and find it with this name in the documentation Hash
+headers: A definition of the used Headers
+
+5. Parameters
+Request parameters are available through the params hash object
+Grape allows you to access only the parameters that have been declared by your params block. It filters out the params that have been passed, but are not allowed.
+
+format :json
+
+params do
+  requires :user, type: Hash do
+    requires :first_name, type: String
+    requires :last_name, type: String
+  end
+end
+
+post 'users/signup' do
+  { 'declared_params' => declared(params) }
+end
+
+curl -X POST -H "Content-Type: application/json" localhost:9292/users/signup -d '{"user": {"first_name":"first name", "last_name": "last name", "random": "never shown"}}'
+
+{
+  "declared_params": {
+    "user": {
+      "first_name": "first name",
+      "last_name": "last name"
+    }
+  }
+}
+
+6. Include Parent Namespaces
+By default declared(params) includes parameters that were defined in all parent namespaces. If you want to return only parameters from your current namespace, you can set include_parent_namespaces option to false
+
+format :json
+
+namespace :parent do
+  params do
+    requires :parent_name, type: String
+  end
+
+  namespace ':parent_name' do
+    params do
+      requires :child_name, type: String
+    end
+    get ':child_name' do
+      {
+        'without_parent_namespaces' => declared(params, include_parent_namespaces: false),
+        'with_parent_namespaces' => declared(params, include_parent_namespaces: true),
+      }
+    end
+  end
+end
+
+curl -X GET -H "Content-Type: application/json" localhost:9292/parent/foo/bar
+
+{
+  "without_parent_namespaces": {
+    "child_name": "bar"
+  },
+  "with_parent_namespaces": {
+    "parent_name": "foo",
+    "child_name": "bar"
+  },
+}
+
+7. Include Missing
+By default declared(params) includes parameters that have nil values. If you want to return only the parameters that are not nil, you can use the include_missing option. By default, include_missing is set to true.
+
+format :json
+
+params do
+  requires :first_name, type: String
+  optional :last_name, type: String
+end
+
+post 'users/signup' do
+  { 'declared_params' => declared(params, include_missing: false) }
+end
+
+curl -X POST -H "Content-Type: application/json" localhost:9292/users/signup -d '{"user": {"first_name":"first name", "random": "never shown"}}'
+
+Response with include_missing:false
+{
+  "declared_params": {
+    "user": {
+      "first_name": "first name"
+    }
+  }
+}
+
+Response with include_missing:true
+{
+  "declared_params": {
+    "first_name": "first name",
+    "last_name": null
+  }
+}
+
+
+It also works on nested hashes:
+
+format :json
+
+params do
+  requires :user, type: Hash do
+    requires :first_name, type: String
+    optional :last_name, type: String
+    requires :address, type: Hash do
+      requires :city, type: String
+      optional :region, type: String
+    end
+  end
+end
+
+post 'users/signup' do
+  { 'declared_params' => declared(params, include_missing: false) }
+end
+
+curl -X POST -H "Content-Type: application/json" localhost:9292/users/signup -d '{"user": {"first_name":"first name", "random": "never shown", "address": { "city": "SF"}}}'
+
+Response with include_missing:false
+{
+  "declared_params": {
+    "user": {
+      "first_name": "first name",
+      "address": {
+        "city": "SF"
+      }
+    }
+  }
+}
+
+Response with include_missing:true
+{
+  "declared_params": {
+    "user": {
+      "first_name": "first name",
+      "last_name": null,
+      "address": {
+        "city": "Zurich",
+        "region": null
+      }
+    }
+  }
+}

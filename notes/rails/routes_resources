@@ -241,7 +241,7 @@ Rails 路由能够识别 /comments/new/preview 路径上的 GET 请求，并把�
 
 16. 列出所有的routes
 http://peatio.local/rails/info/routes
-rails routes -c/-g
+rails routes -c(controller)/-g(grep)
 
 17. 测试路由
 (1) assert_generates

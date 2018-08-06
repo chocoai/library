@@ -149,6 +149,23 @@ I. golang开发
 (2) nodejs充值脚本
 (3) daemon
 (4) API
+Part I. Golang
+a. jwt token
+b. public key
+c. 使用pin支付
+
+Part II. Rails
+a. already implemented APIs
+b. todo APIs
+c. 搞清楚业务
+   地址管理：充值和提现
+   KYC
+   K线图
+   交易对
+
+Part III.
+a. 前端渲染方法
+b. 数据库操作
 
 3. beego automated api document
 
