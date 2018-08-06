@@ -1,0 +1,85 @@
+1. 功能项
+(1) 表示模型和其中的数据；
+(2) 表示模型之间的关系；
+(3) 通过相关联的模型表示继承层次结构；
+(4) 持久存入数据库之前，验证模型；
+(5) 以面向对象的方式处理数据库操作。
+
+2. 多约定少配置
+2.1 命名约定
+(1) Rails 把模型的类名转换成复数，然后查找对应的数据表。例如，模型类名为 Book，数据表就是 books。
+(2) 如果类名由多个单词组成，应该按照 Ruby 的约定，使用驼峰式命名法，这时对应的数据库表将使用下划线分隔各单词
+数据库表名：复数，下划线分隔单词（例如 book_clubs）
+模型类名：单数，每个单词的首字母大写（例如 BookClub）
+
+2.2 模式约定
+(1) 外键 - 使用 singularized_table_name_id 形式命名，例如 item_id，order_id。创建模型关联后，Active Record 会查找这个字段
+(2) 主键 - id
+(3) Others
+created_at：创建记录时，自动设为当前的日期和时间
+updated_at：更新记录时，自动设为当前的日期和时间
+lock_version：在模型中添加乐观锁
+type：让模型使用单表继承
+(association_name)_type：存储多态关联的类型
+(table_name)_count：缓存所关联对象的数量。比如说，一个 Article 有多个 Comment，那么 comments_count 列存储各篇文章现有的评论数量
+
+3. 创建Active Record模型
+class Product < ApplicationRecord
+end
+ApplicationRecord 继承自 ActiveRecord::Base
+
+4. CRUD
+4.1 创建
+create方法会创建一个新记录，并将其存入数据库
+user = User.create(name: "David", occupation: "Code Artist")
+
+new 方法实例化一个新对象，但不保存：
+user = User.new
+user.name = "David"
+user.occupation = "Code Artist"
+调用 user.save 可以把记录存入数据库。
+
+user = User.new do |u|
+  u.name = "David"
+  u.occupation = "Code Artist"
+end
+
+4.2 读取
+users = User.all # 返回所有用户组成的集合
+user = User.first # 返回第一个用户
+david = User.find_by(name: 'David') # 返回第一个名为 David 的用户
+users = User.where(name: 'David', occupation: 'Code Artist').order(created_at: :desc) # 查找所有名为 David，职业为 Code Artists 的用户，而且按照 created_at 反向排列
+
+4.3 更新
+user = User.find_by(name: 'David')
+user.name = 'Dave'
+user.save
+OR
+user = User.find_by(name: 'David')
+user.update(name: 'Dave')
+
+一次更新多个属性时使用这种方法最方便。如果想批量更新多个记录，可以使用类方法 update_all
+User.update_all "max_login_attempts = 3, must_change_password = 'true'"
+
+4.4 删除
+user = User.find_by(name: 'David')
+user.destroy
+
+5. 数据验证
+模型验证有很多方法，可以检查属性值是否不为空，是否是唯一的、没有在数据库中出现过，等等
+
+调用 save 和 update 方法时会做数据验证
+
+class User < ApplicationRecord
+  validates :name, presence: true
+end
+ 
+user = User.new
+user.save  # => false
+user.save! # => ActiveRecord::RecordInvalid: Validation failed: Name can't be blank
+
+6. 回调
+Active Record 回调用于在模型生命周期的特定事件上绑定代码，相应的事件发生时，执行绑定的代码。例如创建新纪录时、更新记录时、删除记录时，等等
+
+7. 迁移
+请见active_record_migration文档
