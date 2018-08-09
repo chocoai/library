@@ -1,0 +1,36 @@
+第1步：生成CA证书和私钥 (ca.crt and ca.key)
+openssl req -newkey rsa:2048 -nodes -keyout ca.key -x509 -days 365 -out ca.crt
+
+
+第2步：签发客户端的证书和私钥
+(1) 生成客户端私钥 (client.key)
+openssl genrsa -out client.key 2048
+
+(2) 使用私钥生成数字证书请求 (client.csr)
+openssl req -new -key client.key -out client.csr
+
+(3) 创建客户端扩展配置信息 (client.ext)
+echo "extendedKeyUsage=clientAuth" >> client.ext
+
+(4) 使用ca.key, ca.crt以及server.key签发服务端的数字证书 (server.crt)
+openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -extfile client.ext -out client.crt -days 365
+
+(5) 生成PKCS#12证书 (client.p12)
+openssl pkcs12 -inkey client.key -in client.crt -export -out client.p12
+
+第3步：签发服务器端的证书和私钥
+(1) 生成服务端私钥 (server.key)
+openssl genrsa -out server.key 2048
+
+(2) 使用私钥生成数字证书请求 (server.csr)
+openssl req -new -key server.key -out server.csr
+
+(3) 使用ca.key, ca.crt以及server.key签发服务端的数字证书 (server.crt)
+openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365
+
+(4) 生成PKCS#12证书 (server.p12)
+openssl pkcs12 -inkey server.key -in server.crt -export -out server.p12
+
+nginx 配置
+ssl_client_certificate /etc/nginx/key/ca.crt;
+ssl_verify_client on;

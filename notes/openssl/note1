@@ -1,0 +1,28 @@
+1. generate private key and public certificate
+openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
+
+2. review the created certificate
+openssl x509 -text -noout -in certificate.pem
+
+3. combine key and certificate in a PKCS#12 (P12) bundle
+openssl pkcs12 -inkey key.pem -in certificate.pem -export -out certificate.p12
+
+4. validate p12 file
+openssl pkcs12 -in certificate.p12 -noout -info
+
+5. 从p12导出pem格式证书
+openssl pkcs12 -clcerts -nokeys -in certificate.p12 -out c.pem
+
+6. 从p12导出pem证书密钥对
+openssl pkcs12 -nocerts -in certificate.p12 -out k.pem
+openssl pkcs12 -nocerts -in certificate.p12 -nodes -out k.pem
+
+7. 导出rsa私钥
+openssl rsa -in k.pem -out private.pem
+
+8. 导出rsa公钥
+openssl rsa -in k.pem -pubout -out public.pem
+
+9. 因为rsa算法使用的是pkcs8模式补足，需要对提取的私钥进一步处理
+openssl pkcs8 -in private.pem -out privatePEM.p8 -outform pem -nocrypt -topk8
+openssl pkcs8 -in private.pem -out privateDER.p8 -outform der -nocrypt -topk8

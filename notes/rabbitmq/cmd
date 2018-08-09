@@ -1,3 +1,9 @@
+清除数据
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl start_app
+rabbitmqctl list_queues
+
 The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. 
 Actually, quite often the producer doesn't even know if a message will be delivered to any queue at all.
 
@@ -27,7 +33,7 @@ rabbitmqctl list_queues name messages_ready messages_unacknowledged
 
 5. When RabbitMQ quits or crashes it will forget the queues and messages unless you tell it not to.
 Two things are required to make sure that messages aren't lost:
-
+udo
 (1) Message durability - BOTH Producer and Consumer
 q, err := ch.QueueDeclare(
   "hello",      // name
