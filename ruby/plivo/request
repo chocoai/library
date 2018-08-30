@@ -1,0 +1,3 @@
+curl -i --user MAMMM3YJNKYZI2NDHKMD:NmE3NTQyYzczMWU2MDU0YjUxYjA4YWU4ODhhNDFh \
+-H "Content-Type: application/json" \
+-d '{"src": "8618661736363", "dst": "8618661827982", "text": "Hi, text from Plivo"}' https://api.plivo.com/v1/Account/MAMMM3YJNKYZI2NDHKMD/Message/

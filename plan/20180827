@@ -142,20 +142,50 @@ TODO List
 ############ 20180806-20180812 ##########
 工作项
 Part I
-1. jwt token #
-2. rsa
-3. pin，输错次数账号锁定，但是可以重新设置 <<<<<<<>>>>>>>
-4. 游戏服务器与won服务器之间的安全措施 #（需要验证证书的归属）
-5. 主动通知游戏服务器支付状态
-6. 游戏支付的加签规则以及通用参数加签
-7. payments表合并到bills表，提现充值记录到bills表
-8. 短信发送方修改
-9. 提供给游戏服务器tpc价格接口
-10. 完成支付的取消退款的API接口（即游戏服务器收到玩家的某笔支付金额后，游戏服务器判断如果当时出现什么问题，可以调用相应的退款接口，进行相应的退款）
-11. 游戏支付的事务操作
-12. rabbitmq发送短信的消息TTL #
-13. 指纹支付相关 <<<<<<<>>>>>>>
-14. sdk支付流程 <<<<<<<>>>>>>>
+1. jwt token
+2. 游戏服务器与won服务器之间的安全措施 #（需要验证证书的归属）
+3. rabbitmq发送短信的消息TTL
+4. 指纹支付相关
+
+Part II. 其他
+1. 邀请奖励校验(需要帮用户校验，同一款游戏，同一个用户的邀请奖励只能获得一次) # (邀请奖励需要生成订单号)
+
+############ 20180813-20180819 ##########
+工作项
+Part I
+1. 游戏支付的加签规则
+2. sdk支付流程
+3. 登出功能
+4. 提供根据ip地址查询国家信息接口
+
+############ 20180820-20180826 ##########
+工作项
+Part I
+1. rsa
+2. sdk支付使用pin
+3. 指纹多设备支持
+
+学习部分
+1. web socket实现代码
+
+############ 20180827-20180902 ##########
+工作项
+Part I
+1. rsa
+*****2. pin，输错次数账号锁定，但是可以重新设置，pin设置相同的情况
+3. 游戏服务器与won服务器之间需要验证证书的归属
+4. 主动通知游戏服务器支付状态
+5. 通用参数加签
+*****6. payments表合并到bills表，提现充值记录到bills表，peatio订单管理 (包括数据库的表)
+*****7. 短信发送方修改 #####
+*****8. 提供给游戏服务器top价格接口 # 目前状态：提供了一个假的接口
+8. 完成支付的取消退款的API接口（即游戏服务器收到玩家的某笔支付金额后，游戏服务器判断如果当时出现什么问题，可以调用相应的退款接口，进行相应的退款）
+9. 游戏支付的事务操作
+10. TPC => TOP #
+11. 帮助页面 - fee, help ## fee已经完成
+12. 手机登录模板
+**************************13. redis error process/redis cache
+14. 升级策略 #
 
 Part II. Rails
 1. already implemented APIs
@@ -179,21 +209,23 @@ Part III. 其他
 5. 一口价支付(应该基本已经完成，还缺少量的PIN-code收尾工作)
 6. WON这边加入相应的接口支持游戏内拍卖(这个第一版本不实现)
 7. 协助游戏进行某些唯一性支付校验(即某些游戏内的唯一道具的支付，我们需要协助游戏进行校验，如果某些道具已经给别人购买成功了，这笔支付在支付成功前需要校验)
-8. 邀请奖励校验(需要帮用户校验，同一款游戏，同一个用户的邀请奖励只能获得一次) <<<<<<<>>>>>>>
-public class DataInviter extends Seed {
-public String first_name;
-public String last_name;
-public String earned;
-public DataCurrency earned_currency;
-public String referred;
-}
+******8. 邀请奖励需要生成订单号 #####
 
 学习部分
 1. Won链学习
 2. Google公司文化
-3. web socket实现代码
-4. https://docs.google.com/document/d/14rGH34mBS5dwNOw934xYyZXdpTLiUch4tA7w8jozpZI/edit
-通过MetaMask 使用wonchain
+3. https://docs.google.com/document/d/14rGH34mBS5dwNOw934xYyZXdpTLiUch4tA7w8jozpZI/edit
+通过MetaMask或者mytherwallet 使用wonchain
+4. 充值提现 #####
+5. 交易大厅 - 交易对
+6. 后台任务 - rake
+7. 管理员后台
+8. buy/sell #####
+9. angular js
+10. nodejs
+11. btc/tpc/won 曲线图
+12. 提现手续费
+13. 挂单 open orders
 
 TODO List
 1. won钱包充值和提款

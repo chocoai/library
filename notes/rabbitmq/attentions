@@ -1,0 +1,9 @@
+I. work queues
+1. acknowlegement = true
+2. durable = true
+3. persistent = true
+4. prefetch = 1
+
+II. publish/subscribe
+exchange
+exclusive=True

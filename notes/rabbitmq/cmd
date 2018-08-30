@@ -4,6 +4,10 @@ rabbitmqctl reset
 rabbitmqctl start_app
 rabbitmqctl list_queues
 
+其他
+rabbitmqctl list_exchanges
+rabbitmqctl list_bindings
+
 The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. 
 Actually, quite often the producer doesn't even know if a message will be delivered to any queue at all.
 
